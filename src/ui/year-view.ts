@@ -4,8 +4,9 @@ import { renderCalendar } from "./calendar-renderer";
 import { EventModal } from "./event-modal";
 import { deleteEvent, generateEventId, loadEvents, saveEvent, updateEvent } from "../events/event-store";
 import type { LindarEvent } from "../types";
+import { getContrastTextColor } from "../utils/colors";
 
-export const VIEW_TYPE_LINDAR = "lindar-calendar-view";
+export const VIEW_TYPE_LINDAR = "lindar-year-view";
 
 export class LindarYearView extends ItemView {
 	private readonly plugin: LindarPlugin;
@@ -161,14 +162,13 @@ export class LindarYearView extends ItemView {
 	private async loadAndRender(container: HTMLElement): Promise<void> {
 		const events = await loadEvents(this.plugin.app, this.plugin.settings.eventsFolder);
 		container.style.setProperty("--lindar-today-color", this.plugin.settings.defaultColor);
-		container.style.setProperty("--lindar-today-text-color", this.getContrastTextColor(this.plugin.settings.defaultColor));
+		container.style.setProperty("--lindar-today-text-color", getContrastTextColor(this.plugin.settings.defaultColor));
 		const responsiveMonthRowHeight = this.getResponsiveMonthRowHeight(container);
 		const responsiveLaneLimit = this.getResponsiveLaneLimit(container);
 		renderCalendar(
 			container,
 			this.currentYear,
 			events,
-			this.plugin.settings.motto,
 			(dateStr) => this.openCreateEventModal(dateStr),
 			(event) => this.openEditEventModal(event),
 			{
@@ -200,27 +200,6 @@ export class LindarYearView extends ItemView {
 		const computed = Math.floor((perMonthHeight - monthChromeHeight) / laneStep);
 
 		return Math.max(1, computed);
-	}
-
-	private getContrastTextColor(color: string): string {
-		const hex = this.parseHexColor(color.trim());
-		if (!hex) return "#fff";
-
-		const r = parseInt(hex.slice(1, 3), 16);
-		const g = parseInt(hex.slice(3, 5), 16);
-		const b = parseInt(hex.slice(5, 7), 16);
-		const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-		return luminance > 0.65 ? "#111" : "#fff";
-	}
-
-	private parseHexColor(value: string): string | null {
-		if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(value)) {
-			if (value.length === 4) {
-				return `#${value[1]}${value[1]}${value[2]}${value[2]}${value[3]}${value[3]}`;
-			}
-			return value.toLowerCase();
-		}
-		return null;
 	}
 
 	private openCreateEventModal(dateStr: string): void {

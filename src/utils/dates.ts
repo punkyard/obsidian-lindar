@@ -40,24 +40,6 @@ export function getWeekdayLabels(): string[] {
 	return ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
 }
 
-export function getMonthName(month: number): string {
-	const names = [
-		"January",
-		"February",
-		"March",
-		"April",
-		"May",
-		"June",
-		"July",
-		"August",
-		"September",
-		"October",
-		"November",
-		"December",
-	];
-	return names[month - 1] || "";
-}
-
 export function getMonthNameShort(month: number): string {
 	const names = [
 		"Jan",

@@ -4,6 +4,7 @@
  * Saturday and Sunday have weekend styling.
  */
 
+import { getContrastTextColor } from "../utils/colors";
 import { getDaysInMonth, getFirstDayOfWeek, isToday, isWeekend, getWeekdayLabels, getMonthNameShort, getWeekNumber, isMonday } from "../utils/dates";
 import type { LindarEvent } from "../types";
 
@@ -23,14 +24,12 @@ export function renderCalendar(
 	container: HTMLElement,
 	year: number,
 	events: LindarEvent[],
-	motto: string,
 	onDateClick?: (dateStr: string) => void,
 	onEventClick?: (event: LindarEvent) => void,
 	options?: CalendarLayoutOptions
 ): void {
 	container.empty();
 	container.addClass("lindar-calendar");
-	void motto;
 	const layoutOptions = options ?? {
 		maxVisibleEventLanes: 0,
 		adaptMonthLanesToEvents: false,
@@ -305,25 +304,4 @@ function applyMonthRowLayout(
 function dateDayInMonth(dateStr: string): number {
 	const dayPart = Number(dateStr.slice(8, 10));
 	return Number.isFinite(dayPart) ? dayPart : NaN;
-}
-
-function getContrastTextColor(color: string): string {
-	const hex = parseHexColor(color.trim());
-	if (!hex) return "#fff";
-
-	const r = parseInt(hex.slice(1, 3), 16);
-	const g = parseInt(hex.slice(3, 5), 16);
-	const b = parseInt(hex.slice(5, 7), 16);
-	const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-	return luminance > 0.65 ? "#111" : "#fff";
-}
-
-function parseHexColor(value: string): string | null {
-	if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(value)) {
-		if (value.length === 4) {
-			return `#${value[1]}${value[1]}${value[2]}${value[2]}${value[3]}${value[3]}`;
-		}
-		return value.toLowerCase();
-	}
-	return null;
 }
