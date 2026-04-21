@@ -33,9 +33,21 @@ export async function updateEvent(
 	const content = buildEventNote(event);
 
 	if (event.filePath) {
-		const existingByPath = app.vault.getAbstractFileByPath(event.filePath);
-		if (existingByPath instanceof TFile) {
-			await app.vault.modify(existingByPath, content);
+		const existingFile = app.vault.getAbstractFileByPath(event.filePath);
+		if (existingFile instanceof TFile) {
+			const folder = normalizePath(eventsFolder);
+			const safeName = sanitizeFileName(event.title);
+			const newFilePath = normalizePath(`${folder}/${safeName}-${event.id}.md`);
+
+			if (existingFile.path !== newFilePath) {
+				await app.fileManager.renameFile(existingFile, newFilePath);
+				const renamedFile = app.vault.getAbstractFileByPath(newFilePath);
+				if (renamedFile instanceof TFile) {
+					await app.vault.modify(renamedFile, content);
+				}
+			} else {
+				await app.vault.modify(existingFile, content);
+			}
 			return;
 		}
 	}
@@ -65,12 +77,12 @@ export async function loadEvents(
 		if (!fm || fm["lindar-event"] !== true) continue;
 
 		events.push({
-			id: String(fm.id ?? child.basename),
-			title: String(fm.title ?? "Untitled"),
-			start: String(fm.start ?? ""),
-			end: String(fm.end ?? fm.start ?? ""),
-			color: String(fm.color ?? "#4f46e5"),
-			notes: fm.notes ? String(fm.notes) : undefined,
+			id: frontmatterString(fm.id, child.basename),
+			title: frontmatterString(fm.title, "Untitled"),
+			start: frontmatterString(fm.start, ""),
+			end: frontmatterString(fm.end, frontmatterString(fm.start, "")),
+			color: frontmatterString(fm.color, "#4f46e5"),
+			notes: optionalFrontmatterString(fm.notes),
 			filePath: child.path,
 		});
 	}
@@ -84,7 +96,7 @@ function extractFrontmatter(content: string): Record<string, unknown> | null {
 	if (!yaml) return null;
 
 	try {
-		const parsed = parseYaml(yaml);
+		const parsed: unknown = parseYaml(yaml);
 		if (parsed && typeof parsed === "object") {
 			return parsed as Record<string, unknown>;
 		}
@@ -100,8 +112,32 @@ export async function deleteEvent(
 ): Promise<void> {
 	const file = app.vault.getAbstractFileByPath(filePath);
 	if (file instanceof TFile) {
-		await app.vault.trash(file, true);
+		await app.fileManager.trashFile(file);
 	}
+}
+
+function frontmatterString(value: unknown, fallback: string): string {
+	if (typeof value === "string") {
+		return value;
+	}
+
+	if (typeof value === "number" || typeof value === "boolean") {
+		return String(value);
+	}
+
+	return fallback;
+}
+
+function optionalFrontmatterString(value: unknown): string | undefined {
+	if (typeof value === "string") {
+		return value;
+	}
+
+	if (typeof value === "number" || typeof value === "boolean") {
+		return String(value);
+	}
+
+	return undefined;
 }
 
 function buildEventNote(event: LindarEvent): string {

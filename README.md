@@ -14,6 +14,25 @@ Because:
 
 ⚠️ **linDar is in early development.**
 
+
+linDar is a response to Nick Milo's request — in his video [The Most Useful Calendar View in 2025 That No One Told You About](https://youtu.be/SQHYj7x-t3A&t=702) from his channel [Linking Your Thinking](https://www.youtube.com/@linkingyourthinking)
+
+we'd like to thank him for his approach and his inspiration that guided the visual interface of linDar calendar
+we, too, are very much concerned by the tools we are provided with by usual apps and websites
+
+### why a yearly linear calendar?
+
+- you might find answer to every aspect of this question in Milo's video
+- but put in simple words:
+    - it's the possibililty to see your entire year on one page
+
+
+
+.. our calendar is bigger than a month
+to help you change your perspective and
+challenge your actions
+
+
 ## Overview
 
 `linDar` is a yearly horizontal linear calendar plugin for Obsidian.
@@ -80,15 +99,6 @@ color: "#e74c3c"
 Optional notes about the event...
 ```
 
-### Future extensions
-
-These are intentionally **not part of v1**, but remain relevant longer-term ideas:
-
-- CalDAV synchronization
-- per-user `.ics` export
-- secure sharing links
-- authentication
-- private and family event permissions
 
 ## Technical direction
 
@@ -156,6 +166,20 @@ The roadmap assumes a typical Obsidian plugin layout like:
 - keep startup work light and defer heavy rendering until needed
 - avoid network behavior in v1 unless clearly documented and user-controlled
 
+## Current development status
+
+The plugin is actively moving from event rendering toward scroll and layout polish.
+
+- [x] Yearly horizontal calendar grid with sticky month labels and headers
+- [x] Event creation popup and markdown-backed event storage
+- [x] Single-day and multi-day event rendering in month rows
+- [x] Edit and delete events from the calendar
+- [x] Render continuous multi-day event bars below date numbers
+- [x] Improve month-list wheel capture, scroll behavior, and responsive lane layout
+- [ ] Finalize month event lane scrolling in empty tail areas
+- [ ] Polish sticky headers and per-month adaptive lane height
+- [ ] Complete release readiness documentation and tests
+
 ## Roadmap
 
 ### Phase 1 — scaffold
@@ -192,27 +216,28 @@ The roadmap assumes a typical Obsidian plugin layout like:
 - [x] Add year navigation controls
 - [x] Display the customizable motto
 
-### Phase 3 — event creation
+### Phase 3 — event creation and storage
 
-- [ ] Open a popup when the user clicks a date cell
-- [ ] Add title, start date, end date, color, and notes fields
-- [ ] Use the native color input when supported by the OS
-- [ ] Save events as Markdown notes with YAML frontmatter
-- [ ] Load saved events back into the calendar view
-- [ ] Render single-day event chips inside cells
+- [x] Open a popup when the user clicks a date cell
+- [x] Add title, start date, end date, color, and notes fields
+- [x] Use the native color input when supported by the OS
+- [x] Save events as Markdown notes with YAML frontmatter
+- [x] Load saved events back into the calendar view
+- [x] Render single-day and multi-day events as colored event bars
+- [x] Edit and delete existing events from the calendar
+- [ ] Improve event bar spacing, contrast, and overflow behavior
 
-### Phase 4 — multi-day events
+### Phase 4 — multi-day events and layout
 
-- [ ] Add click-drag range selection
-- [ ] Pre-fill the popup with the selected date range
-- [ ] Render multi-day events as continuous colored bars
-- [ ] Support events spanning weeks and months
-- [ ] Handle overlapping events with sensible lane stacking
+- [x] Render multi-day events as continuous bars
+- [x] Support events spanning weeks and months
+- [x] Handle overlapping events with sensible lane stacking
+- [ ] Finalize month event lane scroll interaction
+- [ ] Add adaptive lane height / month-specific scrolling
+- [ ] Fix empty-event-list tail area wheel propagation
 
 ### Phase 5 — polish
 
-- [ ] Edit existing events from the calendar
-- [ ] Delete events cleanly
 - [ ] Add hover details / tooltip behavior
 - [ ] Improve spacing, typography, borders, and color balance
 - [ ] Auto-scroll the view so today is visible when useful
@@ -239,7 +264,7 @@ The roadmap assumes a typical Obsidian plugin layout like:
 - [ ] Open the community plugin PR using the plugin submission template
 - [ ] Complete the release checklist and respond to validation feedback
 
-## Future release checklist
+## Release readiness checklist
 
 When `linDar` is ready for release, this is the practical checklist to complete before submission:
 
@@ -248,33 +273,20 @@ When `linDar` is ready for release, this is the practical checklist to complete 
 - [ ] `README.md` clearly explains what the plugin does and how to use it
 - [ ] `LICENSE` is present and matches **GPL-3.0-or-later**
 - [ ] `manifest.json` contains the correct `id`, `name`, `version`, `author`, `description`, `minAppVersion`, and `isDesktopOnly`
-- [ ] the plugin folder name matches the manifest `id` during local development
-
-### Build and test readiness
-
-- [ ] `npm install` completes successfully
-- [ ] `npm run dev` rebuilds without errors
-- [ ] production build generates a working `main.js`
-- [ ] plugin loads correctly in Obsidian from `.obsidian/plugins/lindar`
-- [ ] commands, settings, and custom views register and unload cleanly
-- [ ] manual testing is done on macOS, plus Windows and Linux where possible
-
-### Release readiness
-
-- [ ] GitHub release tag matches `manifest.json` version exactly
-- [ ] release tag does **not** use a `v` prefix
-- [ ] `main.js` is uploaded as an individual release asset
-- [ ] `manifest.json` is uploaded as an individual release asset
-- [ ] `styles.css` is uploaded too if the plugin ships styles
-- [ ] `versions.json` is updated for the released version
-
-### Community submission readiness
-
+- [ ] `versions.json` exists and includes an entry for the current release version
+- [ ] `main.js` is built and committed for release artifacts
+- [ ] `styles.css` is included if custom styling is required
+- [ ] `package.json` scripts support `npm run dev` and `npm run build`
+- [ ] The plugin builds cleanly with `npm run build`
+- [ ] The plugin has been validated manually in a dev vault
+- [ ] Release tag matches `manifest.json` version exactly and uses no `v` prefix
+- [ ] GitHub release assets include `main.js`, `manifest.json`, and optional `styles.css`
+- [ ] Community submission PR is prepared with a matching description and metadata
 - [ ] `community-plugins.json` entry uses the exact same plugin `id`
-- [ ] submitted description matches `manifest.json` description exactly
+- [ ] Submitted description matches `manifest.json` description exactly
 - [ ] PR is opened against `obsidianmd/obsidian-releases` with the plugin template
-- [ ] submission checklist is fully completed
-- [ ] any validation failures are fixed by pushing another commit to the PR branch
+- [ ] Submission checklist is fully completed
+- [ ] Any validation failures are fixed by pushing another commit to the PR branch
 
 ## Design notes
 
@@ -290,12 +302,17 @@ In short: it has to look good.
 
 ## Future features
 
-- daily notes compatibility: insert and read events in daily notes within a designated block (default 'Agenda')
-- choose where to save: dedicated folder (default: 'AGENDA')
-- choose event format: file or list block
-- switch to vertical view
-- switch to month, week, day views
-- sync with calDav
+- _when repo hits 100 GitHub ⭐_
+
+    - daily notes compatibility: insert and read events in daily notes within a designated block (default 'Agenda')
+    - choose where to save: dedicated folder or daily notes or single log file or any file
+    - choose event format: file or list block
+
+- _when repo hits 500 GitHub ⭐_
+
+    - switch to vertical view
+    - click on a month title to create an event all through that month
+    - same for days: create a recurrent event on a day of the month throughout the year
 
 ## License
 

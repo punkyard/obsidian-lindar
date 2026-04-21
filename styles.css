@@ -18,7 +18,7 @@
 	justify-content: space-between;
 	align-items: center;
 	padding: 0.3rem 0.5rem;
-	border-bottom: 1px solid var(--background-modifier-border);
+	border-bottom: none;
 	background-color: var(--background-primary);
 	flex-shrink: 0;
 	gap: 0.5rem;
@@ -74,6 +74,14 @@
 	scrollbar-gutter: stable both-edges;
 }
 
+.lindar-calendar-container.lindar-mode-compact {
+	overflow-y: auto;
+}
+
+.lindar-calendar-container.lindar-mode-adaptive {
+	overflow-y: hidden;
+}
+
 .lindar-calendar {
 	display: block;
 	min-width: 100%;
@@ -86,16 +94,30 @@
 	flex-direction: column;
 	width: max-content;
 	min-width: 100%;
-	/* height set by JS via ResizeObserver — clientHeight excludes scrollbar */
+	min-height: 100%;
+}
+
+.lindar-wrapper-scrollable-months {
+	height: 100%;
 	overflow: hidden;
 }
 
+.lindar-wrapper-compact-months {
+	overflow: visible;
+}
+
 .lindar-months-grid {
-	display: grid;
-	grid-template-rows: repeat(12, minmax(0, 1fr));
-	flex: 1;
+	display: flex;
+	flex-direction: column;
+	flex: 0 0 auto;
 	min-height: 0;
-	overflow: hidden;
+	overflow: visible;
+}
+
+.lindar-wrapper-scrollable-months .lindar-months-grid {
+	flex: 1 1 auto;
+	overflow-y: auto;
+	overflow-x: hidden;
 }
 
 /* Header row — weekday labels + motto */
@@ -119,6 +141,7 @@
 	position: relative;
 	z-index: 2;
 	border-top: 1px solid color-mix(in srgb, var(--background-modifier-border) 65%, transparent);
+	border-bottom: none;
 }
 
 .lindar-weekday-side {
@@ -135,7 +158,6 @@
 	font-weight: 600;
 	color: var(--text-muted);
 	background-color: var(--background-primary);
-	border-right: 1px solid color-mix(in srgb, var(--background-modifier-border) 55%, transparent);
 	line-height: 1;
 }
 
@@ -148,13 +170,16 @@
 	display: grid;
 	grid-template-columns: 60px repeat(37, minmax(22px, 1fr)) 60px;
 	gap: 0;
-	border-bottom: 1px solid color-mix(in srgb, var(--background-modifier-border) 40%, transparent);
-	min-height: 0;
+	border-bottom: 1px solid color-mix(in srgb, var(--background-modifier-border) 25%, transparent);
+	min-height: 24px;
 	overflow: hidden;
 	position: relative;
 	--lindar-event-lane-height: 14px;
 	--lindar-event-lane-gap: 2px;
 	--lindar-event-top-offset: 17px;
+	--lindar-visible-event-lanes: 0;
+	--lindar-visible-event-gaps: 0;
+	--lindar-total-event-lanes: 1;
 }
 
 /* Month label (sticky left) */
@@ -171,7 +196,6 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	border-right: 1px solid color-mix(in srgb, var(--background-modifier-border) 60%, transparent);
 	color: var(--text-normal);
 }
 
@@ -181,8 +205,6 @@
 	right: 0;
 	z-index: 4;
 	left: auto;
-	border-right: none;
-	border-left: 1px solid color-mix(in srgb, var(--background-modifier-border) 60%, transparent);
 }
 
 /* Day cells */
@@ -190,7 +212,6 @@
 	position: relative;
 	min-height: 0;
 	padding: 2px 3px 3px;
-	border-right: 1px solid color-mix(in srgb, var(--background-modifier-border) 55%, transparent);
 	background-color: var(--background-primary);
 	font-size: 0.7rem;
 	display: flex;
@@ -198,14 +219,9 @@
 	z-index: 1;
 }
 
-.lindar-cell:last-child {
-	border-right: none;
-}
-
 .lindar-cell.lindar-empty {
 	background-color: transparent;
 	opacity: 0.2;
-	border-right-color: color-mix(in srgb, var(--background-modifier-border) 45%, transparent);
 }
 
 .lindar-cell.lindar-weekend {
@@ -213,8 +229,24 @@
 }
 
 .lindar-cell.lindar-today {
-	border: 1px solid var(--interactive-accent);
-	border-right: 1px solid var(--interactive-accent);
+	border-right: none;
+}
+
+.lindar-cell.lindar-today .lindar-date-number {
+	color: var(--lindar-today-text-color, #fff);
+	z-index: 3;
+	min-width: 14px;
+	height: 14px;
+	padding: 0 3px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 999px;
+	background-color: var(--lindar-today-color, var(--interactive-accent));
+}
+
+.lindar-cell.lindar-today .lindar-date-number::before {
+	content: none;
 }
 
 /* Week number — top-left, very subtle */
@@ -233,7 +265,7 @@
 /* Date number — top-right, bright on today */
 .lindar-date-number {
 	position: absolute;
-	top: 1px;
+	top: 2px;
 	right: 4px;
 	font-size: 0.68rem;
 	font-weight: 600;
@@ -303,23 +335,30 @@
 	top: var(--lindar-event-top-offset);
 	left: 60px;
 	right: 60px;
-	bottom: 2px;
+	height: calc(var(--lindar-visible-event-lanes) * var(--lindar-event-lane-height) + var(--lindar-visible-event-gaps) * var(--lindar-event-lane-gap));
 	display: grid;
 	grid-template-columns: repeat(37, minmax(22px, 1fr));
-	grid-template-rows: repeat(var(--lindar-event-lanes, 1), var(--lindar-event-lane-height));
+	grid-template-rows: repeat(var(--lindar-total-event-lanes), var(--lindar-event-lane-height));
 	grid-auto-rows: var(--lindar-event-lane-height);
 	row-gap: var(--lindar-event-lane-gap);
-	pointer-events: none;
+	pointer-events: auto;
 	z-index: 3;
+	overflow: hidden;
+}
+
+.lindar-events-layer-scrollable {
+	overflow-y: auto;
+	scrollbar-width: thin;
 }
 
 .lindar-event-bar {
 	align-self: center;
 	height: calc(var(--lindar-event-lane-height) - 2px);
 	padding: 0 3px;
-	border-radius: 3px;
+	border-radius: 8px;
 	background-color: var(--event-color, var(--interactive-accent));
-	color: #fff;
+	color: var(--event-text-color, #fff);
+	text-shadow: 0 0 2px rgba(0, 0, 0, 0.28);
 	font-size: 0.55rem;
 	font-weight: 500;
 	line-height: calc(var(--lindar-event-lane-height) - 2px);

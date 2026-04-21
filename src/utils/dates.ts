@@ -82,18 +82,16 @@ export function getMonthNameShort(month: number): string {
  */
 export function getWeekNumber(year: number, month: number, day: number): number {
 	const date = new Date(year, month - 1, day);
-	const firstDayOfYear = new Date(year, 0, 1);
-	const lastDayOfPrevYear = new Date(year, 0, 0);
-	
+
 	// Adjust date to Thursday of the same week (ISO 8601)
 	const dayOfWeek = date.getDay(); // 0 = Sunday
 	const diff = date.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
 	const thursday = new Date(date.setDate(diff + 3));
-	
+
 	// Days since 4 January in the year
 	const yearStart = new Date(thursday.getFullYear(), 0, 4);
 	const daysDiff = (thursday.getTime() - yearStart.getTime()) / 86400000;
-	
+
 	return Math.floor(daysDiff / 7) + 1;
 }
 

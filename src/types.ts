@@ -12,4 +12,6 @@ export interface LindarSettings {
 	eventsFolder: string;
 	defaultColor: string;
 	motto: string;
+	maxVisibleEventLanes: number;
+	adaptMonthLanesToEvents: boolean;
 }

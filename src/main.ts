@@ -1,7 +1,7 @@
 import { Plugin, WorkspaceLeaf } from "obsidian";
 import { DEFAULT_SETTINGS, LindarSettingTab } from "./settings";
 import type { LindarSettings } from "./types";
-import { LindarView, VIEW_TYPE_LINDAR } from "./ui/calendar-view";
+import { LindarYearView, VIEW_TYPE_LINDAR } from "./ui/year-view";
 
 export default class LindarPlugin extends Plugin {
 	settings!: LindarSettings;
@@ -9,15 +9,15 @@ export default class LindarPlugin extends Plugin {
 	async onload(): Promise<void> {
 		await this.loadSettings();
 
-		this.registerView(VIEW_TYPE_LINDAR, (leaf) => new LindarView(leaf, this));
+		this.registerView(VIEW_TYPE_LINDAR, (leaf) => new LindarYearView(leaf, this));
 
-		this.addRibbonIcon("calendar", "Open linDar", () => {
+		this.addRibbonIcon("calendar", "Open year view", () => {
 			void this.activateView();
 		});
 
 		this.addCommand({
 			id: "open-lindar-view",
-			name: "Open linDar",
+			name: "Open year view",
 			callback: () => {
 				void this.activateView();
 			},
@@ -26,9 +26,7 @@ export default class LindarPlugin extends Plugin {
 		this.addSettingTab(new LindarSettingTab(this.app, this));
 	}
 
-	onunload(): void {
-		this.app.workspace.detachLeavesOfType(VIEW_TYPE_LINDAR);
-	}
+	onunload(): void {}
 
 	async activateView(): Promise<void> {
 		const { workspace } = this.app;
@@ -41,7 +39,7 @@ export default class LindarPlugin extends Plugin {
 		}
 
 		if (leaf) {
-			workspace.revealLeaf(leaf);
+			void workspace.revealLeaf(leaf);
 		}
 	}
 
@@ -51,5 +49,13 @@ export default class LindarPlugin extends Plugin {
 
 	async saveSettings(): Promise<void> {
 		await this.saveData(this.settings);
+	}
+
+	refreshCalendar(): void {
+		this.app.workspace.getLeavesOfType(VIEW_TYPE_LINDAR).forEach((leaf) => {
+			if (leaf.view instanceof LindarYearView) {
+				leaf.view.refresh();
+			}
+		});
 	}
 }

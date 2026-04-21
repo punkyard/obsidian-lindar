@@ -8,6 +8,16 @@ import { getDaysInMonth, getFirstDayOfWeek, isToday, isWeekend, getWeekdayLabels
 import type { LindarEvent } from "../types";
 
 const MAX_COLS = 37; // 6 (max offset) + 31 (max days in month)
+const MONTH_BASE_HEIGHT = 24;
+const EVENT_LANE_HEIGHT = 14;
+const EVENT_LANE_GAP = 2;
+
+export interface CalendarLayoutOptions {
+	maxVisibleEventLanes: number;
+	adaptMonthLanesToEvents: boolean;
+	responsiveMonthRowHeight: number;
+	responsiveLaneLimit: number;
+}
 
 export function renderCalendar(
 	container: HTMLElement,
@@ -15,13 +25,28 @@ export function renderCalendar(
 	events: LindarEvent[],
 	motto: string,
 	onDateClick?: (dateStr: string) => void,
-	onEventClick?: (event: LindarEvent) => void
+	onEventClick?: (event: LindarEvent) => void,
+	options?: CalendarLayoutOptions
 ): void {
 	container.empty();
 	container.addClass("lindar-calendar");
 	void motto;
+	const layoutOptions = options ?? {
+		maxVisibleEventLanes: 0,
+		adaptMonthLanesToEvents: false,
+		responsiveMonthRowHeight: MONTH_BASE_HEIGHT,
+		responsiveLaneLimit: 1,
+	};
+
+	container.classList.toggle("lindar-mode-adaptive", layoutOptions.adaptMonthLanesToEvents);
+	container.classList.toggle("lindar-mode-compact", !layoutOptions.adaptMonthLanesToEvents);
 
 	const wrapper = container.createDiv("lindar-wrapper");
+	if (layoutOptions.adaptMonthLanesToEvents) {
+		wrapper.addClass("lindar-wrapper-scrollable-months");
+	} else {
+		wrapper.addClass("lindar-wrapper-compact-months");
+	}
 
 	// Top weekday row
 	renderWeekdayRow(wrapper, "lindar-header-row lindar-header-row-top");
@@ -30,7 +55,7 @@ export function renderCalendar(
 
 	// 12 month rows
 	for (let month = 1; month <= 12; month++) {
-		renderMonthRow(monthsGrid, year, month, events, onDateClick, onEventClick);
+		renderMonthRow(monthsGrid, year, month, events, layoutOptions, onDateClick, onEventClick);
 	}
 
 	// Bottom weekday row (repeated day line)
@@ -59,6 +84,7 @@ function renderMonthRow(
 	year: number,
 	month: number,
 	events: LindarEvent[],
+	layoutOptions: CalendarLayoutOptions,
 	onDateClick?: (dateStr: string) => void,
 	onEventClick?: (event: LindarEvent) => void
 ): void {
@@ -119,7 +145,51 @@ function renderMonthRow(
 	const monthLabelRight = monthRow.createDiv("lindar-month-label lindar-month-label-right");
 	monthLabelRight.setText(getMonthNameShort(month));
 
-	renderMonthEventBars(monthRow, year, month, daysInMonth, firstDayOffset, events, onEventClick);
+	const { eventsLayer, totalLanes } = renderMonthEventBars(monthRow, year, month, daysInMonth, firstDayOffset, events, onEventClick);
+	const visibleLanes = getVisibleLanes(totalLanes, layoutOptions);
+	const rowHeightLanes = getRowHeightLanes(visibleLanes, totalLanes, layoutOptions);
+	applyMonthRowLayout(monthRow, visibleLanes, rowHeightLanes, totalLanes, layoutOptions);
+
+	if (eventsLayer && totalLanes > visibleLanes && !layoutOptions.adaptMonthLanesToEvents) {
+		eventsLayer.addClass("lindar-events-layer-scrollable");
+		monthRow.addClass("lindar-month-row-scrollable");
+		eventsLayer.addEventListener("wheel", (event) => {
+			if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+			const deltaY = event.deltaY;
+			const calendarScroller = monthRow.closest(".lindar-calendar-container");
+
+			const scrollCalendar = () => {
+				if (!(calendarScroller instanceof HTMLElement)) return;
+				calendarScroller.scrollTop += deltaY;
+				event.preventDefault();
+			};
+
+			const rect = eventsLayer.getBoundingClientRect();
+			const relativeX = event.clientX - rect.left;
+			const colWidth = rect.width / MAX_COLS;
+			const hoveredCol = Math.floor(relativeX / colWidth) + 1;
+			const monthStartCol = firstDayOffset + 1;
+			const monthEndCol = firstDayOffset + daysInMonth;
+
+			// Outside the actual month-day columns, let the calendar scroll.
+			if (hoveredCol < monthStartCol || hoveredCol > monthEndCol) {
+				scrollCalendar();
+				return;
+			}
+
+			const maxScrollTop = Math.max(0, eventsLayer.scrollHeight - eventsLayer.clientHeight);
+
+			// Short/non-scrollable event list: let calendar/page scroll.
+			if (maxScrollTop <= 0) {
+				scrollCalendar();
+				return;
+			}
+
+			const nextScrollTop = Math.min(maxScrollTop, Math.max(0, eventsLayer.scrollTop + deltaY));
+			eventsLayer.scrollTop = nextScrollTop;
+			event.preventDefault();
+		}, { passive: false });
+	}
 }
 
 function renderMonthEventBars(
@@ -130,7 +200,7 @@ function renderMonthEventBars(
 	firstDayOffset: number,
 	events: LindarEvent[],
 	onEventClick?: (event: LindarEvent) => void
-): void {
+): { eventsLayer: HTMLElement | null; totalLanes: number } {
 	const monthStart = `${year}-${String(month).padStart(2, "0")}-01`;
 	const monthEnd = `${year}-${String(month).padStart(2, "0")}-${String(daysInMonth).padStart(2, "0")}`;
 
@@ -143,8 +213,7 @@ function renderMonthEventBars(
 		});
 
 	if (monthEvents.length === 0) {
-		monthRow.style.setProperty("--lindar-event-lanes", "0");
-		return;
+		return { eventsLayer: null, totalLanes: 0 };
 	}
 
 	const eventsLayer = monthRow.createDiv("lindar-events-layer");
@@ -172,6 +241,7 @@ function renderMonthEventBars(
 		const bar = eventsLayer.createDiv("lindar-event-bar");
 		bar.setText(event.title);
 		bar.style.setProperty("--event-color", event.color);
+		bar.style.setProperty("--event-text-color", getContrastTextColor(event.color));
 		bar.style.gridColumn = `${startCol} / ${endColExclusive}`;
 		bar.style.gridRow = String(laneIndex + 1);
 		bar.setAttribute("title", `${event.title} (${event.start} → ${event.end})`);
@@ -185,10 +255,75 @@ function renderMonthEventBars(
 		});
 	}
 
-	monthRow.style.setProperty("--lindar-event-lanes", String(Math.max(1, laneLastEndCol.length)));
+	return { eventsLayer, totalLanes: laneLastEndCol.length };
+}
+
+function getVisibleLanes(totalLanes: number, options: CalendarLayoutOptions): number {
+	if (totalLanes === 0) return 0;
+	if (options.adaptMonthLanesToEvents) return totalLanes;
+
+	const laneLimit = options.maxVisibleEventLanes > 0
+		? options.maxVisibleEventLanes
+		: options.responsiveLaneLimit;
+
+	return Math.min(totalLanes, Math.max(1, laneLimit));
+}
+
+function getRowHeightLanes(visibleLanes: number, totalLanes: number, options: CalendarLayoutOptions): number {
+	// Responsive mode (0): all months uniform height = responsiveLaneLimit regardless of event count
+	if (options.maxVisibleEventLanes === 0 && !options.adaptMonthLanesToEvents) {
+		return options.responsiveLaneLimit;
+	}
+	// Adaptive mode: each month expands to fit all its event lanes
+	if (options.adaptMonthLanesToEvents) {
+		return totalLanes;
+	}
+	// Fixed cap mode: height matches the visible capped lanes
+	return visibleLanes;
+}
+
+function applyMonthRowLayout(
+	monthRow: HTMLElement,
+	visibleLanes: number,
+	rowHeightLanes: number,
+	totalLanes: number,
+	layoutOptions: CalendarLayoutOptions
+): void {
+	const heightGaps = Math.max(0, rowHeightLanes - 1);
+	const fallbackHeight = MONTH_BASE_HEIGHT + rowHeightLanes * EVENT_LANE_HEIGHT + heightGaps * EVENT_LANE_GAP;
+	const rowHeight = layoutOptions.maxVisibleEventLanes === 0 && !layoutOptions.adaptMonthLanesToEvents
+		? layoutOptions.responsiveMonthRowHeight
+		: fallbackHeight;
+
+	monthRow.style.setProperty("--lindar-visible-event-lanes", String(visibleLanes));
+	monthRow.style.setProperty("--lindar-visible-event-gaps", String(Math.max(0, visibleLanes - 1)));
+	monthRow.style.setProperty("--lindar-total-event-lanes", String(Math.max(1, totalLanes)));
+	monthRow.style.height = `${rowHeight}px`;
+	monthRow.style.minHeight = `${rowHeight}px`;
 }
 
 function dateDayInMonth(dateStr: string): number {
 	const dayPart = Number(dateStr.slice(8, 10));
 	return Number.isFinite(dayPart) ? dayPart : NaN;
+}
+
+function getContrastTextColor(color: string): string {
+	const hex = parseHexColor(color.trim());
+	if (!hex) return "#fff";
+
+	const r = parseInt(hex.slice(1, 3), 16);
+	const g = parseInt(hex.slice(3, 5), 16);
+	const b = parseInt(hex.slice(5, 7), 16);
+	const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+	return luminance > 0.65 ? "#111" : "#fff";
+}
+
+function parseHexColor(value: string): string | null {
+	if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(value)) {
+		if (value.length === 4) {
+			return `#${value[1]}${value[1]}${value[2]}${value[2]}${value[3]}${value[3]}`;
+		}
+		return value.toLowerCase();
+	}
+	return null;
 }
