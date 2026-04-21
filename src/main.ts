@@ -11,7 +11,7 @@ export default class LindarPlugin extends Plugin {
 
 		this.registerView(VIEW_TYPE_LINDAR, (leaf) => new LindarYearView(leaf, this));
 
-		this.addRibbonIcon("calendar", "Open year view", () => {
+		this.addRibbonIcon("calendar", "linDar", () => {
 			void this.activateView();
 		});
 

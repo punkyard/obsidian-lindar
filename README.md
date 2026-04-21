@@ -176,8 +176,8 @@ The plugin is actively moving from event rendering toward scroll and layout poli
 - [x] Edit and delete events from the calendar
 - [x] Render continuous multi-day event bars below date numbers
 - [x] Improve month-list wheel capture, scroll behavior, and responsive lane layout
-- [ ] Finalize month event lane scrolling in empty tail areas
-- [ ] Polish sticky headers and per-month adaptive lane height
+- [x] Finalize month event lane scrolling in empty tail areas
+- [x] Polish event bars: spacing, contrast, and overflow
 - [ ] Complete release readiness documentation and tests
 
 ## Roadmap
@@ -225,16 +225,16 @@ The plugin is actively moving from event rendering toward scroll and layout poli
 - [x] Load saved events back into the calendar view
 - [x] Render single-day and multi-day events as colored event bars
 - [x] Edit and delete existing events from the calendar
-- [ ] Improve event bar spacing, contrast, and overflow behavior
+- [x] Improve event bar spacing, contrast, and overflow behavior
 
 ### Phase 4 — multi-day events and layout
 
 - [x] Render multi-day events as continuous bars
 - [x] Support events spanning weeks and months
 - [x] Handle overlapping events with sensible lane stacking
-- [ ] Finalize month event lane scroll interaction
-- [ ] Add adaptive lane height / month-specific scrolling
-- [ ] Fix empty-event-list tail area wheel propagation
+- [x] Finalize month event lane scroll interaction
+- [x] Add adaptive lane height / month-specific scrolling
+- [x] Fix empty-event-list tail area wheel propagation
 
 ### Phase 5 — polish
 

@@ -185,6 +185,13 @@ function renderMonthRow(
 			}
 
 			const nextScrollTop = Math.min(maxScrollTop, Math.max(0, eventsLayer.scrollTop + deltaY));
+
+			// Already at scroll boundary: pass through to outer calendar.
+			if (nextScrollTop === eventsLayer.scrollTop) {
+				scrollCalendar();
+				return;
+			}
+
 			eventsLayer.scrollTop = nextScrollTop;
 			event.preventDefault();
 		}, { passive: false });
