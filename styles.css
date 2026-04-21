@@ -151,13 +151,17 @@
 	border-bottom: 1px solid color-mix(in srgb, var(--background-modifier-border) 40%, transparent);
 	min-height: 0;
 	overflow: hidden;
+	position: relative;
+	--lindar-event-lane-height: 14px;
+	--lindar-event-lane-gap: 2px;
+	--lindar-event-top-offset: 17px;
 }
 
 /* Month label (sticky left) */
 .lindar-month-label {
 	position: sticky;
 	left: 0;
-	z-index: 9;
+	z-index: 4;
 	padding: 0.2rem;
 	font-weight: 600;
 	text-align: center;
@@ -175,7 +179,7 @@
 .lindar-month-label-right {
 	position: sticky;
 	right: 0;
-	z-index: 8;
+	z-index: 4;
 	left: auto;
 	border-right: none;
 	border-left: 1px solid color-mix(in srgb, var(--background-modifier-border) 60%, transparent);
@@ -185,12 +189,13 @@
 .lindar-cell {
 	position: relative;
 	min-height: 0;
-	padding: 2px 3px;
+	padding: 2px 3px 3px;
 	border-right: 1px solid color-mix(in srgb, var(--background-modifier-border) 55%, transparent);
 	background-color: var(--background-primary);
 	font-size: 0.7rem;
 	display: flex;
 	flex-direction: column;
+	z-index: 1;
 }
 
 .lindar-cell:last-child {
@@ -222,6 +227,7 @@
 	color: var(--text-muted);
 	opacity: 0.4;
 	line-height: 1;
+	z-index: 2;
 }
 
 /* Date number — top-right, bright on today */
@@ -233,6 +239,7 @@
 	font-weight: 600;
 	color: var(--text-normal);
 	opacity: 0.9;
+	z-index: 2;
 }
 
 /* Year dropdown */
@@ -290,25 +297,52 @@
 	background-color: color-mix(in srgb, var(--interactive-accent) 8%, var(--lindar-weekend-bg));
 }
 
-/* Event chips */
-.lindar-event-chip {
-	display: block;
-	margin-top: 2px;
+/* Month-row event layer (below date numbers, above cells) */
+.lindar-events-layer {
+	position: absolute;
+	top: var(--lindar-event-top-offset);
+	left: 60px;
+	right: 60px;
+	bottom: 2px;
+	display: grid;
+	grid-template-columns: repeat(37, minmax(22px, 1fr));
+	grid-template-rows: repeat(var(--lindar-event-lanes, 1), var(--lindar-event-lane-height));
+	grid-auto-rows: var(--lindar-event-lane-height);
+	row-gap: var(--lindar-event-lane-gap);
+	pointer-events: none;
+	z-index: 3;
+}
+
+.lindar-event-bar {
+	align-self: center;
+	height: calc(var(--lindar-event-lane-height) - 2px);
 	padding: 0 3px;
 	border-radius: 3px;
-	background-color: var(--chip-color, var(--interactive-accent));
+	background-color: var(--event-color, var(--interactive-accent));
 	color: #fff;
 	font-size: 0.55rem;
 	font-weight: 500;
-	line-height: 1.5;
+	line-height: calc(var(--lindar-event-lane-height) - 2px);
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	cursor: pointer;
+	pointer-events: auto;
+	min-width: 0;
 }
 
-.lindar-event-chip:hover {
+.lindar-event-bar:hover {
 	filter: brightness(1.15);
+}
+
+.lindar-event-bar.lindar-event-continues-left {
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+}
+
+.lindar-event-bar.lindar-event-continues-right {
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
 }
 
 /* Event modal */
