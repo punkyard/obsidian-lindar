@@ -2,7 +2,7 @@ import { ItemView, WorkspaceLeaf } from "obsidian";
 import type LindarPlugin from "../main";
 import { renderCalendar } from "./calendar-renderer";
 import { EventModal } from "./event-modal";
-import { loadEvents, saveEvent, generateEventId } from "../events/event-store";
+import { deleteEvent, loadEvents, saveEvent, updateEvent, generateEventId } from "../events/event-store";
 import type { LindarEvent } from "../types";
 
 export const VIEW_TYPE_LINDAR = "lindar-calendar-view";
@@ -161,13 +161,13 @@ export class LindarView extends ItemView {
 			this.currentYear,
 			events,
 			this.plugin.settings.motto,
-			(dateStr) => this.openEventModal(dateStr, events)
+			(dateStr) => this.openCreateEventModal(dateStr),
+			(event) => this.openEditEventModal(event)
 		);
 		this.fitWrapperHeight(container);
 	}
 
-	private openEventModal(dateStr: string, events: LindarEvent[]): void {
-		void events;
+	private openCreateEventModal(dateStr: string): void {
 		new EventModal(
 			this.plugin.app,
 			dateStr,
@@ -182,6 +182,38 @@ export class LindarView extends ItemView {
 					notes: data.notes || undefined,
 				};
 				await saveEvent(this.plugin.app, this.plugin.settings.eventsFolder, event);
+				const calendarContainer = this.contentEl.querySelector(".lindar-calendar-container") as HTMLElement;
+				if (calendarContainer) {
+					this.renderCurrentCalendar(calendarContainer);
+				}
+			}
+		).open();
+	}
+
+	private openEditEventModal(event: LindarEvent): void {
+		new EventModal(
+			this.plugin.app,
+			event.start,
+			this.plugin.settings.defaultColor,
+			async (data) => {
+				const updatedEvent: LindarEvent = {
+					...event,
+					title: data.title,
+					start: data.start,
+					end: data.end,
+					color: data.color,
+					notes: data.notes || undefined,
+				};
+				await updateEvent(this.plugin.app, this.plugin.settings.eventsFolder, updatedEvent);
+				const calendarContainer = this.contentEl.querySelector(".lindar-calendar-container") as HTMLElement;
+				if (calendarContainer) {
+					this.renderCurrentCalendar(calendarContainer);
+				}
+			},
+			event,
+			async () => {
+				if (!event.filePath) return;
+				await deleteEvent(this.plugin.app, event.filePath);
 				const calendarContainer = this.contentEl.querySelector(".lindar-calendar-container") as HTMLElement;
 				if (calendarContainer) {
 					this.renderCurrentCalendar(calendarContainer);

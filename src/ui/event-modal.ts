@@ -12,7 +12,8 @@ export interface EventFormData {
 export class EventModal extends Modal {
 	private readonly initialDate: string;
 	private readonly defaultColor: string;
-	private readonly onSave: (data: EventFormData) => void;
+	private readonly onSave: (data: EventFormData) => Promise<void> | void;
+	private readonly onDelete?: () => Promise<void> | void;
 	private readonly existingEvent?: LindarEvent;
 
 	private _titleInput!: HTMLInputElement;
@@ -25,14 +26,16 @@ export class EventModal extends Modal {
 		app: App,
 		initialDate: string,
 		defaultColor: string,
-		onSave: (data: EventFormData) => void,
-		existingEvent?: LindarEvent
+		onSave: (data: EventFormData) => Promise<void> | void,
+		existingEvent?: LindarEvent,
+		onDelete?: () => Promise<void> | void
 	) {
 		super(app);
 		this.initialDate = initialDate;
 		this.defaultColor = defaultColor;
 		this.onSave = onSave;
 		this.existingEvent = existingEvent;
+		this.onDelete = onDelete;
 	}
 
 	onOpen(): void {
@@ -141,6 +144,18 @@ export class EventModal extends Modal {
 		});
 		cancelBtn.onclick = () => this.close();
 
+		if (this.existingEvent && this.onDelete) {
+			const deleteBtn = buttons.createEl("button", {
+				text: "Delete",
+				attr: { type: "button" },
+			});
+			deleteBtn.addClass("lindar-delete-btn");
+			deleteBtn.onclick = () => {
+				void this.onDelete?.();
+				this.close();
+			};
+		}
+
 		setTimeout(() => titleInput.focus(), 50);
 	}
 
@@ -148,7 +163,7 @@ export class EventModal extends Modal {
 		const title = this._titleInput.value.trim();
 		if (!title) return;
 
-		this.onSave({
+		void this.onSave({
 			title,
 			start: this._startInput.value,
 			end: this._endInput.value || this._startInput.value,

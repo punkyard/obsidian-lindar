@@ -14,7 +14,8 @@ export function renderCalendar(
 	year: number,
 	events: LindarEvent[],
 	motto: string,
-	onDateClick?: (dateStr: string) => void
+	onDateClick?: (dateStr: string) => void,
+	onEventClick?: (event: LindarEvent) => void
 ): void {
 	container.empty();
 	container.addClass("lindar-calendar");
@@ -29,7 +30,7 @@ export function renderCalendar(
 
 	// 12 month rows
 	for (let month = 1; month <= 12; month++) {
-		renderMonthRow(monthsGrid, year, month, events, onDateClick);
+		renderMonthRow(monthsGrid, year, month, events, onDateClick, onEventClick);
 	}
 
 	// Bottom weekday row (repeated day line)
@@ -58,7 +59,8 @@ function renderMonthRow(
 	year: number,
 	month: number,
 	events: LindarEvent[],
-	onDateClick?: (dateStr: string) => void
+	onDateClick?: (dateStr: string) => void,
+	onEventClick?: (event: LindarEvent) => void
 ): void {
 	const monthRow = wrapper.createDiv("lindar-month-row");
 
@@ -104,6 +106,10 @@ function renderMonthRow(
 			chip.setText(ev.title);
 			chip.style.setProperty("--chip-color", ev.color);
 			chip.setAttribute("title", `${ev.title} (${ev.start} → ${ev.end})`);
+			chip.addEventListener("click", (e) => {
+				e.stopPropagation();
+				onEventClick?.(ev);
+			});
 		}
 
 		// Click handler

@@ -25,6 +25,24 @@ export async function saveEvent(
 	}
 }
 
+export async function updateEvent(
+	app: App,
+	eventsFolder: string,
+	event: LindarEvent
+): Promise<void> {
+	const content = buildEventNote(event);
+
+	if (event.filePath) {
+		const existingByPath = app.vault.getAbstractFileByPath(event.filePath);
+		if (existingByPath instanceof TFile) {
+			await app.vault.modify(existingByPath, content);
+			return;
+		}
+	}
+
+	await saveEvent(app, eventsFolder, event);
+}
+
 export async function loadEvents(
 	app: App,
 	eventsFolder: string

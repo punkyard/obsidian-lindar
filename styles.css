@@ -362,3 +362,13 @@
 	justify-content: flex-end;
 	margin-top: 16px;
 }
+
+.lindar-event-modal .lindar-delete-btn {
+	margin-right: auto;
+	border-color: var(--color-red);
+	color: var(--color-red);
+}
+
+.lindar-event-modal .lindar-delete-btn:hover {
+	background-color: color-mix(in srgb, var(--color-red) 12%, transparent);
+}
