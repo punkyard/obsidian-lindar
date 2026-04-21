@@ -1,6 +1,9 @@
 import { ItemView, WorkspaceLeaf } from "obsidian";
 import type LindarPlugin from "../main";
 import { renderCalendar } from "./calendar-renderer";
+import { EventModal } from "./event-modal";
+import { loadEvents, saveEvent, generateEventId } from "../events/event-store";
+import type { LindarEvent } from "../types";
 
 export const VIEW_TYPE_LINDAR = "lindar-calendar-view";
 
@@ -148,8 +151,42 @@ export class LindarView extends ItemView {
 	}
 
 	private renderCurrentCalendar(container: HTMLElement): void {
-		const events: never[] = [];
-		renderCalendar(container, this.currentYear, events, this.plugin.settings.motto);
+		void this.loadAndRender(container);
+	}
+
+	private async loadAndRender(container: HTMLElement): Promise<void> {
+		const events = await loadEvents(this.plugin.app, this.plugin.settings.eventsFolder);
+		renderCalendar(
+			container,
+			this.currentYear,
+			events,
+			this.plugin.settings.motto,
+			(dateStr) => this.openEventModal(dateStr, events)
+		);
 		this.fitWrapperHeight(container);
+	}
+
+	private openEventModal(dateStr: string, events: LindarEvent[]): void {
+		void events;
+		new EventModal(
+			this.plugin.app,
+			dateStr,
+			this.plugin.settings.defaultColor,
+			async (data) => {
+				const event: LindarEvent = {
+					id: generateEventId(),
+					title: data.title,
+					start: data.start,
+					end: data.end,
+					color: data.color,
+					notes: data.notes || undefined,
+				};
+				await saveEvent(this.plugin.app, this.plugin.settings.eventsFolder, event);
+				const calendarContainer = this.contentEl.querySelector(".lindar-calendar-container") as HTMLElement;
+				if (calendarContainer) {
+					this.renderCurrentCalendar(calendarContainer);
+				}
+			}
+		).open();
 	}
 }

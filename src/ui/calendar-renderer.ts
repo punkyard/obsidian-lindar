@@ -13,11 +13,11 @@ export function renderCalendar(
 	container: HTMLElement,
 	year: number,
 	events: LindarEvent[],
-	motto: string
+	motto: string,
+	onDateClick?: (dateStr: string) => void
 ): void {
 	container.empty();
 	container.addClass("lindar-calendar");
-	void events;
 	void motto;
 
 	const wrapper = container.createDiv("lindar-wrapper");
@@ -29,7 +29,7 @@ export function renderCalendar(
 
 	// 12 month rows
 	for (let month = 1; month <= 12; month++) {
-		renderMonthRow(monthsGrid, year, month);
+		renderMonthRow(monthsGrid, year, month, events, onDateClick);
 	}
 
 	// Bottom weekday row (repeated day line)
@@ -56,7 +56,9 @@ function renderWeekdayRow(wrapper: HTMLElement, className: string): void {
 function renderMonthRow(
 	wrapper: HTMLElement,
 	year: number,
-	month: number
+	month: number,
+	events: LindarEvent[],
+	onDateClick?: (dateStr: string) => void
 ): void {
 	const monthRow = wrapper.createDiv("lindar-month-row");
 
@@ -93,6 +95,24 @@ function renderMonthRow(
 
 		if (isWeekend(dayOfWeek)) {
 			cell.addClass("lindar-weekend");
+		}
+
+		// Render event chips (single-day and multi-day)
+		const dayEvents = events.filter((e) => e.start <= dateStr && e.end >= dateStr);
+		for (const ev of dayEvents) {
+			const chip = cell.createDiv("lindar-event-chip");
+			chip.setText(ev.title);
+			chip.style.setProperty("--chip-color", ev.color);
+			chip.setAttribute("title", `${ev.title} (${ev.start} → ${ev.end})`);
+		}
+
+		// Click handler
+		if (onDateClick) {
+			cell.addClass("lindar-cell-clickable");
+			cell.addEventListener("click", (e) => {
+				if ((e.target as HTMLElement).closest(".lindar-event-chip")) return;
+				onDateClick(dateStr);
+			});
 		}
 	}
 
