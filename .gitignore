@@ -1,0 +1,28 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# vscode
+.vscode
+
+# Intellij
+*.iml
+.idea
+
+# npm
+node_modules
+
+# Build artifacts
+main.js
+*.map
+dist
+
+# Obsidian local data
+data.json
+
+# macOS
+.DS_Store

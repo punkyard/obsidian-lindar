@@ -1,0 +1,9 @@
+{
+  "id": "obsidian-lindar",
+  "name": "linDar",
+  "version": "0.1.0",
+  "minAppVersion": "1.5.0",
+  "description": "Yearly horizontal linear calendar plugin for Obsidian, designed for long-horizon planning",
+  "author": "punkyard",
+  "isDesktopOnly": false
+}
