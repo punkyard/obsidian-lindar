@@ -4,14 +4,14 @@
  * Saturday and Sunday have weekend styling.
  */
 
-import { getContrastTextColor } from "../utils/colors";
+import { getRelatedEventLabelColor } from "../utils/colors";
 import { getDaysInMonth, getFirstDayOfWeek, isToday, isWeekend, getWeekdayLabels, getMonthNameShort, getWeekNumber, isMonday } from "../utils/dates";
 import type { LindarEvent } from "../types";
 
 const MAX_COLS = 37; // 6 (max offset) + 31 (max days in month)
 const MONTH_BASE_HEIGHT = 24;
-const EVENT_LANE_HEIGHT = 14;
-const EVENT_LANE_GAP = 2;
+const EVENT_LANE_HEIGHT = 15;
+const EVENT_LANE_GAP = 1;
 
 export interface CalendarLayoutOptions {
 	maxVisibleEventLanes: number;
@@ -247,7 +247,7 @@ function renderMonthEventBars(
 		const bar = eventsLayer.createDiv("lindar-event-bar");
 		bar.setText(event.title);
 		bar.style.setProperty("--event-color", event.color);
-		bar.style.setProperty("--event-text-color", getContrastTextColor(event.color));
+		bar.style.setProperty("--event-text-color", getRelatedEventLabelColor(event.color));
 		bar.style.gridColumn = `${startCol} / ${endColExclusive}`;
 		bar.style.gridRow = String(laneIndex + 1);
 		bar.setAttribute("title", `${event.title} (${event.start} → ${event.end})`);
