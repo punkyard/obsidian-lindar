@@ -4,13 +4,13 @@
  * Saturday and Sunday have weekend styling.
  */
 
-import { getRelatedEventLabelColor } from "../utils/colors";
+import { getEventColorTone, getRelatedEventLabelColor } from "../utils/colors";
 import { getDaysInMonth, getFirstDayOfWeek, isToday, isWeekend, getWeekdayLabels, getMonthNameShort, getWeekNumber, isMonday } from "../utils/dates";
 import type { LindarEvent } from "../types";
 
 const MAX_COLS = 37; // 6 (max offset) + 31 (max days in month)
 const MONTH_BASE_HEIGHT = 24;
-const EVENT_LANE_HEIGHT = 15;
+const EVENT_LANE_HEIGHT = 14;
 const EVENT_LANE_GAP = 1;
 
 export interface CalendarLayoutOptions {
@@ -246,14 +246,27 @@ function renderMonthEventBars(
 
 		const bar = eventsLayer.createDiv("lindar-event-bar");
 		bar.setText(event.title);
+		bar.setAttribute("data-event-id", event.id);
+		const barTone = getEventColorTone(event.color);
+		bar.addClass(barTone === "dark" ? "lindar-event-bar-dark" : "lindar-event-bar-light");
+		const labelColor = getRelatedEventLabelColor(event.color);
 		bar.style.setProperty("--event-color", event.color);
-		bar.style.setProperty("--event-text-color", getRelatedEventLabelColor(event.color));
+		bar.style.setProperty("--event-text-color", labelColor);
+		bar.style.color = labelColor;
 		bar.style.gridColumn = `${startCol} / ${endColExclusive}`;
 		bar.style.gridRow = String(laneIndex + 1);
 		bar.setAttribute("title", `${event.title} (${event.start} → ${event.end})`);
 
 		if (event.start < monthStart) bar.addClass("lindar-event-continues-left");
 		if (event.end > monthEnd) bar.addClass("lindar-event-continues-right");
+
+		bar.addEventListener("mouseenter", () => {
+			toggleLinkedEventBarHoverState(bar, event.id, true);
+		});
+
+		bar.addEventListener("mouseleave", () => {
+			toggleLinkedEventBarHoverState(bar, event.id, false);
+		});
 
 		bar.addEventListener("click", (e) => {
 			e.stopPropagation();
@@ -262,6 +275,21 @@ function renderMonthEventBars(
 	}
 
 	return { eventsLayer, totalLanes: laneLastEndCol.length };
+}
+
+function toggleLinkedEventBarHoverState(sourceBar: HTMLElement, eventId: string, isHovered: boolean): void {
+	if (!eventId) return;
+
+	const calendarRoot = sourceBar.closest(".lindar-calendar");
+	const scope = calendarRoot instanceof HTMLElement ? calendarRoot : sourceBar.ownerDocument;
+	if (!scope) return;
+
+	const allBars = scope.querySelectorAll(".lindar-event-bar[data-event-id]");
+	allBars.forEach((bar) => {
+		if (!(bar instanceof HTMLElement)) return;
+		if (bar.getAttribute("data-event-id") !== eventId) return;
+		bar.classList.toggle("lindar-event-bar-linked-hover", isHovered);
+	});
 }
 
 function getVisibleLanes(totalLanes: number, options: CalendarLayoutOptions): number {
