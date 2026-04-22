@@ -13,6 +13,8 @@ export class LindarYearView extends ItemView {
 	private currentYear: number;
 	private resizeObserver: ResizeObserver | null = null;
 	private lastCalendarSize = "";
+	private yearDropdown: HTMLElement | null = null;
+	private removeYearDropdownListener: (() => void) | null = null;
 
 	constructor(leaf: WorkspaceLeaf, plugin: LindarPlugin) {
 		super(leaf);
@@ -52,6 +54,15 @@ export class LindarYearView extends ItemView {
 		yearBtn.setAttribute("title", "Select year");
 		yearBtn.onclick = () => this.showYearDropdown(yearBtn);
 
+		const todayBtn = yearControls.createEl("button");
+		todayBtn.setText("today");
+		todayBtn.setAttribute("aria-label", "Today");
+		todayBtn.setAttribute("title", "Go to current year");
+		todayBtn.onclick = () => {
+			this.currentYear = new Date().getFullYear();
+			this.updateDisplay();
+		};
+
 		const nextBtn = yearControls.createEl("button");
 		nextBtn.setText("→");
 		nextBtn.setAttribute("aria-label", "Next year");
@@ -80,6 +91,7 @@ export class LindarYearView extends ItemView {
 	}
 
 	async onClose(): Promise<void> {
+		this.closeYearDropdown();
 		this.resizeObserver?.disconnect();
 		this.resizeObserver = null;
 		this.contentEl.empty();
@@ -101,6 +113,8 @@ export class LindarYearView extends ItemView {
 			yearBtn.setText(String(this.currentYear));
 		}
 
+		this.closeYearDropdown();
+
 		const calendarContainer = this.contentEl.querySelector(".lindar-calendar-container");
 		if (calendarContainer instanceof HTMLElement) {
 			this.renderCurrentCalendar(calendarContainer);
@@ -108,6 +122,11 @@ export class LindarYearView extends ItemView {
 	}
 
 	private showYearDropdown(element: HTMLElement): void {
+		if (this.yearDropdown?.parentElement) {
+			this.closeYearDropdown();
+			return;
+		}
+
 		const currentYear = this.currentYear;
 		const startYear = currentYear - 10;
 		const endYear = currentYear + 10;
@@ -125,27 +144,64 @@ export class LindarYearView extends ItemView {
 				option.classList.add("lindar-year-current");
 			}
 			option.textContent = String(year);
-			option.onclick = () => {
+			option.onclick = (event) => {
+				event.stopPropagation();
 				this.currentYear = year;
 				this.updateDisplay();
-				dropdown.remove();
 			};
 			scrollContainer.appendChild(option);
 		}
 
 		dropdown.appendChild(scrollContainer);
-		element.parentElement?.appendChild(dropdown);
+		dropdown.addEventListener("click", (event) => event.stopPropagation());
 
-		const closeDropdown = () => {
-			if (dropdown.parentElement) {
-				dropdown.remove();
+		const parentEl = element.parentElement;
+		if (!parentEl) return;
+		parentEl.appendChild(dropdown);
+		this.yearDropdown = dropdown;
+
+		// Align dropdown horizontally under the year button
+		const btnRect = element.getBoundingClientRect();
+		const parentRect = parentEl.getBoundingClientRect();
+		const center = btnRect.left - parentRect.left + btnRect.width / 2;
+		dropdown.style.left = `${center}px`;
+		dropdown.style.transform = "translateX(-50%)";
+
+		// Scroll so current year is centered
+		const currentOption = scrollContainer.querySelector(".lindar-year-current");
+		if (currentOption instanceof HTMLElement) {
+			setTimeout(() => currentOption.scrollIntoView({ block: "center" }), 0);
+		}
+
+		const closeDropdown = (event: MouseEvent) => {
+			const target = event.target;
+			if (target instanceof Node && dropdown.contains(target)) {
+				return;
 			}
-			document.removeEventListener("click", closeDropdown);
+			if (target instanceof Node && element.contains(target)) {
+				return;
+			}
+			this.closeYearDropdown();
 		};
 
 		setTimeout(() => {
 			document.addEventListener("click", closeDropdown);
 		}, 100);
+
+		this.removeYearDropdownListener = () => {
+			document.removeEventListener("click", closeDropdown);
+		};
+	}
+
+	private closeYearDropdown(): void {
+		this.removeYearDropdownListener?.();
+		this.removeYearDropdownListener = null;
+
+		if (this.yearDropdown?.parentElement) {
+			this.yearDropdown.remove();
+		}
+
+		this.yearDropdown = null;
 	}
 
 	refresh(): void {
