@@ -15,6 +15,11 @@ export class LindarYearView extends ItemView {
 	private lastCalendarSize = "";
 	private yearDropdown: HTMLElement | null = null;
 	private removeYearDropdownListener: (() => void) | null = null;
+	private eventsCache: LindarEvent[] | null = null;
+	private renderToken = 0;
+	private pendingRenderFrame: number | null = null;
+	private pendingRenderContainer: HTMLElement | null = null;
+	private pendingForceReload = false;
 
 	constructor(leaf: WorkspaceLeaf, plugin: LindarPlugin) {
 		super(leaf);
@@ -92,6 +97,10 @@ export class LindarYearView extends ItemView {
 
 	async onClose(): Promise<void> {
 		this.closeYearDropdown();
+		if (this.pendingRenderFrame !== null) {
+			cancelAnimationFrame(this.pendingRenderFrame);
+			this.pendingRenderFrame = null;
+		}
 		this.resizeObserver?.disconnect();
 		this.resizeObserver = null;
 		this.contentEl.empty();
@@ -207,16 +216,41 @@ export class LindarYearView extends ItemView {
 	refresh(): void {
 		const calendarContainer = this.contentEl.querySelector(".lindar-calendar-container");
 		if (calendarContainer instanceof HTMLElement) {
-			this.renderCurrentCalendar(calendarContainer);
+			this.renderCurrentCalendar(calendarContainer, true);
 		}
 	}
 
-	private renderCurrentCalendar(container: HTMLElement): void {
-		void this.loadAndRender(container);
+	private renderCurrentCalendar(container: HTMLElement, forceReload = false): void {
+		this.pendingRenderContainer = container;
+		this.pendingForceReload = this.pendingForceReload || forceReload;
+
+		if (this.pendingRenderFrame !== null) return;
+
+		this.pendingRenderFrame = requestAnimationFrame(() => {
+			this.pendingRenderFrame = null;
+
+			const target = this.pendingRenderContainer;
+			const shouldForceReload = this.pendingForceReload;
+			this.pendingRenderContainer = null;
+			this.pendingForceReload = false;
+
+			if (!target) return;
+			void this.loadAndRender(target, shouldForceReload);
+		});
 	}
 
-	private async loadAndRender(container: HTMLElement): Promise<void> {
-		const events = await loadEvents(this.plugin.app, this.plugin.settings.eventsFolder);
+	private async loadAndRender(container: HTMLElement, forceReload = false): Promise<void> {
+		const token = ++this.renderToken;
+
+		if (forceReload || !this.eventsCache) {
+			this.eventsCache = await loadEvents(this.plugin.app, this.plugin.settings.eventsFolder);
+		}
+
+		if (token !== this.renderToken) return;
+
+		const events = this.eventsCache;
+		if (!events) return;
+
 		container.style.setProperty("--lindar-today-color", this.plugin.settings.defaultColor);
 		container.style.setProperty("--lindar-today-text-color", getContrastTextColor(this.plugin.settings.defaultColor));
 		const responsiveMonthRowHeight = this.getResponsiveMonthRowHeight(container);
@@ -273,9 +307,10 @@ export class LindarYearView extends ItemView {
 					notes: data.notes || undefined,
 				};
 				await saveEvent(this.plugin.app, this.plugin.settings.eventsFolder, event);
+				this.eventsCache = null;
 				const calendarContainer = this.contentEl.querySelector(".lindar-calendar-container");
 				if (calendarContainer instanceof HTMLElement) {
-					this.renderCurrentCalendar(calendarContainer);
+					this.renderCurrentCalendar(calendarContainer, true);
 				}
 			}
 		).open();
@@ -296,18 +331,20 @@ export class LindarYearView extends ItemView {
 					notes: data.notes || undefined,
 				};
 				await updateEvent(this.plugin.app, this.plugin.settings.eventsFolder, updatedEvent);
+				this.eventsCache = null;
 				const calendarContainer = this.contentEl.querySelector(".lindar-calendar-container");
 				if (calendarContainer instanceof HTMLElement) {
-					this.renderCurrentCalendar(calendarContainer);
+					this.renderCurrentCalendar(calendarContainer, true);
 				}
 			},
 			event,
 			async () => {
 				if (!event.filePath) return;
 				await deleteEvent(this.plugin.app, event.filePath);
+				this.eventsCache = null;
 				const calendarContainer = this.contentEl.querySelector(".lindar-calendar-container");
 				if (calendarContainer instanceof HTMLElement) {
-					this.renderCurrentCalendar(calendarContainer);
+					this.renderCurrentCalendar(calendarContainer, true);
 				}
 			}
 		).open();

@@ -180,6 +180,16 @@ The plugin is actively moving from event rendering toward scroll and layout poli
 - [x] Polish event bars: spacing, contrast, and overflow
 - [ ] Complete release readiness documentation and tests
 
+### Scaling and performance backlog (deferred)
+
+The high-impact runtime optimizations are already in place (event cache, coalesced rendering, stale-render guards).
+
+For larger vaults and heavier usage, these advanced optimizations are intentionally deferred:
+
+- [ ] Incremental rendering (update only changed month rows instead of rebuilding the full year view)
+- [ ] Background/preload event parsing strategy for very large event collections
+- [ ] Vault file-change listeners to keep in-memory event cache hot without explicit reloads
+
 ## Roadmap
 
 ### Phase 1 — scaffold

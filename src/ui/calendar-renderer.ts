@@ -144,7 +144,12 @@ function renderMonthRow(
 	const monthLabelRight = monthRow.createDiv("lindar-month-label lindar-month-label-right");
 	monthLabelRight.setText(getMonthNameShort(month));
 
-	const { eventsLayer, totalLanes } = renderMonthEventBars(monthRow, year, month, daysInMonth, firstDayOffset, events, onEventClick);
+	const {
+		eventsLayer,
+		totalLanes,
+		eventSpanStartCol,
+		eventSpanEndCol,
+	} = renderMonthEventBars(monthRow, year, month, daysInMonth, firstDayOffset, events, onEventClick);
 	const visibleLanes = getVisibleLanes(totalLanes, layoutOptions);
 	const rowHeightLanes = getRowHeightLanes(visibleLanes, totalLanes, layoutOptions);
 	applyMonthRowLayout(monthRow, visibleLanes, rowHeightLanes, totalLanes, layoutOptions);
@@ -152,7 +157,7 @@ function renderMonthRow(
 	if (eventsLayer && totalLanes > visibleLanes && !layoutOptions.adaptMonthLanesToEvents) {
 		eventsLayer.addClass("lindar-events-layer-scrollable");
 		monthRow.addClass("lindar-month-row-scrollable");
-		eventsLayer.addEventListener("wheel", (event) => {
+		monthRow.addEventListener("wheel", (event) => {
 			if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
 			const deltaY = event.deltaY;
 			const calendarScroller = monthRow.closest(".lindar-calendar-container");
@@ -163,15 +168,23 @@ function renderMonthRow(
 				event.preventDefault();
 			};
 
-			const rect = eventsLayer.getBoundingClientRect();
-			const relativeX = event.clientX - rect.left;
-			const colWidth = rect.width / MAX_COLS;
-			const hoveredCol = Math.floor(relativeX / colWidth) + 1;
-			const monthStartCol = firstDayOffset + 1;
-			const monthEndCol = firstDayOffset + daysInMonth;
+			const rowRect = monthRow.getBoundingClientRect();
+			const gridLeft = rowRect.left + 60;
+			const gridRight = rowRect.right - 60;
 
-			// Outside the actual month-day columns, let the calendar scroll.
-			if (hoveredCol < monthStartCol || hoveredCol > monthEndCol) {
+			if (event.clientX < gridLeft || event.clientX > gridRight) {
+				scrollCalendar();
+				return;
+			}
+
+			const colWidth = (gridRight - gridLeft) / MAX_COLS;
+			const relativeX = event.clientX - gridLeft;
+			const hoveredCol = Math.floor(relativeX / colWidth) + 1;
+			const scrollStartCol = eventSpanStartCol ?? (firstDayOffset + 1);
+			const scrollEndCol = eventSpanEndCol ?? (firstDayOffset + daysInMonth);
+
+			// Outside the active event span, let the calendar scroll.
+			if (hoveredCol < scrollStartCol || hoveredCol > scrollEndCol) {
 				scrollCalendar();
 				return;
 			}
@@ -206,7 +219,12 @@ function renderMonthEventBars(
 	firstDayOffset: number,
 	events: LindarEvent[],
 	onEventClick?: (event: LindarEvent) => void
-): { eventsLayer: HTMLElement | null; totalLanes: number } {
+): {
+	eventsLayer: HTMLElement | null;
+	totalLanes: number;
+	eventSpanStartCol: number | null;
+	eventSpanEndCol: number | null;
+} {
 	const monthStart = `${year}-${String(month).padStart(2, "0")}-01`;
 	const monthEnd = `${year}-${String(month).padStart(2, "0")}-${String(daysInMonth).padStart(2, "0")}`;
 
@@ -219,11 +237,18 @@ function renderMonthEventBars(
 		});
 
 	if (monthEvents.length === 0) {
-		return { eventsLayer: null, totalLanes: 0 };
+		return {
+			eventsLayer: null,
+			totalLanes: 0,
+			eventSpanStartCol: null,
+			eventSpanEndCol: null,
+		};
 	}
 
 	const eventsLayer = monthRow.createDiv("lindar-events-layer");
 	const laneLastEndCol: number[] = [];
+	let minEventCol: number | null = null;
+	let maxEventCol: number | null = null;
 
 	for (const event of monthEvents) {
 		const visibleStart = event.start < monthStart ? monthStart : event.start;
@@ -235,6 +260,8 @@ function renderMonthEventBars(
 
 		const startCol = firstDayOffset + startDay;
 		const endColExclusive = firstDayOffset + endDay + 1;
+		minEventCol = minEventCol === null ? startCol : Math.min(minEventCol, startCol);
+		maxEventCol = maxEventCol === null ? endColExclusive - 1 : Math.max(maxEventCol, endColExclusive - 1);
 
 		let laneIndex = laneLastEndCol.findIndex((lastEndCol) => startCol > lastEndCol);
 		if (laneIndex === -1) {
@@ -274,7 +301,12 @@ function renderMonthEventBars(
 		});
 	}
 
-	return { eventsLayer, totalLanes: laneLastEndCol.length };
+	return {
+		eventsLayer,
+		totalLanes: laneLastEndCol.length,
+		eventSpanStartCol: minEventCol,
+		eventSpanEndCol: maxEventCol,
+	};
 }
 
 function toggleLinkedEventBarHoverState(sourceBar: HTMLElement, eventId: string, isHovered: boolean): void {
