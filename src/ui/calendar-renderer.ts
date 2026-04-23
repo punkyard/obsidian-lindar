@@ -4,7 +4,7 @@
  * Saturday and Sunday have weekend styling.
  */
 
-import { getContrastTextColor, getEventColorTone, getRelatedEventLabelColor } from "../utils/colors";
+import { getContrastTextColor, getEventColorTone } from "../utils/colors";
 import { getDaysInMonth, getFirstDayOfWeek, isToday, isWeekend, getWeekdayLabels, getMonthNameShort, getWeekNumber, isMonday } from "../utils/dates";
 import type { LindarEvent } from "../types";
 

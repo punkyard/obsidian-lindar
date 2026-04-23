@@ -96,8 +96,8 @@ function parseColorToRgb(value: string): { r: number; g: number; b: number } | n
 	const probe = getColorProbeElement();
 	if (!probe) return null;
 
-	probe.style.color = "";
-	probe.style.color = value;
+	probe.setCssProps({ color: "" });
+	probe.setCssProps({ color: value });
 	if (!probe.style.color) return null;
 
 	const computed = getComputedStyle(probe).color;
@@ -116,14 +116,16 @@ function getColorProbeElement(): HTMLElement | null {
 	if (typeof document === "undefined") return null;
 
 	const probe = document.createElement("span");
-	probe.style.position = "fixed";
-	probe.style.left = "-9999px";
-	probe.style.top = "-9999px";
-	probe.style.pointerEvents = "none";
-	probe.style.opacity = "0";
-	probe.style.width = "0";
-	probe.style.height = "0";
-	probe.style.overflow = "hidden";
+	probe.setCssProps({
+		position: "fixed",
+		left: "-9999px",
+		top: "-9999px",
+		pointerEvents: "none",
+		opacity: "0",
+		width: "0",
+		height: "0",
+		overflow: "hidden",
+	});
 
 	(document.body ?? document.documentElement).appendChild(probe);
 	colorProbeEl = probe;
