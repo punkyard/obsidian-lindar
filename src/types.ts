@@ -4,6 +4,8 @@ export interface LindarEvent {
 	start: string;
 	end: string;
 	color: string;
+	type?: string;
+	participants?: string[];
 	notes?: string;
 	filePath?: string;
 }

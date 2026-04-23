@@ -6,6 +6,8 @@ export interface EventFormData {
 	start: string;
 	end: string;
 	color: string;
+	type: string;
+	participants: string[];
 	notes: string;
 }
 
@@ -20,6 +22,8 @@ export class EventModal extends Modal {
 	private _startInput!: HTMLInputElement;
 	private _endInput!: HTMLInputElement;
 	private _colorInput!: HTMLInputElement;
+	private _typeInput!: HTMLInputElement;
+	private _participantsInput!: HTMLTextAreaElement;
 	private _notesInput!: HTMLTextAreaElement;
 
 	constructor(
@@ -114,6 +118,46 @@ export class EventModal extends Modal {
 		colorInput.value = this.existingEvent?.color ?? this.defaultColor;
 		this._colorInput = colorInput;
 
+		// Type
+		const typeGroup = form.createDiv("lindar-modal-field");
+		typeGroup.createEl("label", {
+			text: "Type",
+			attr: { for: "lindar-type" },
+		});
+		const typeInput = typeGroup.createEl("input", {
+			attr: {
+				type: "text",
+				id: "lindar-type",
+				placeholder: "appointment, call, meal, meeting…",
+				list: "lindar-event-types",
+			},
+		});
+		typeInput.value = this.existingEvent?.type ?? "";
+		this._typeInput = typeInput;
+
+		const typeSuggestions = form.createEl("datalist", {
+			attr: { id: "lindar-event-types" },
+		});
+		for (const type of ["appointment", "call", "meal", "meeting", "travel", "deadline", "task", "reminder", "other"]) {
+			typeSuggestions.createEl("option", { attr: { value: type } });
+		}
+
+		// Participants
+		const participantsGroup = form.createDiv("lindar-modal-field");
+		participantsGroup.createEl("label", {
+			text: "Participants",
+			attr: { for: "lindar-participants" },
+		});
+		const participantsInput = participantsGroup.createEl("textarea", {
+			attr: {
+				id: "lindar-participants",
+				placeholder: "One participant per line",
+				rows: "3",
+			},
+		});
+		participantsInput.value = this.existingEvent?.participants?.join("\n") ?? "";
+		this._participantsInput = participantsInput;
+
 		// Notes
 		const notesGroup = form.createDiv("lindar-modal-field");
 		notesGroup.createEl("label", {
@@ -168,6 +212,11 @@ export class EventModal extends Modal {
 			start: this._startInput.value,
 			end: this._endInput.value || this._startInput.value,
 			color: this._colorInput.value,
+			type: this._typeInput.value.trim(),
+			participants: this._participantsInput.value
+				.split(/\r?\n/)
+				.map((participant) => participant.trim())
+				.filter(Boolean),
 			notes: this._notesInput.value.trim(),
 		});
 		this.close();

@@ -304,6 +304,8 @@ export class LindarYearView extends ItemView {
 					start: data.start,
 					end: data.end,
 					color: data.color,
+					type: data.type || undefined,
+					participants: data.participants.length > 0 ? data.participants : undefined,
 					notes: data.notes || undefined,
 				};
 				await saveEvent(this.plugin.app, this.plugin.settings.eventsFolder, event);
@@ -328,6 +330,8 @@ export class LindarYearView extends ItemView {
 					start: data.start,
 					end: data.end,
 					color: data.color,
+					type: data.type || undefined,
+					participants: data.participants.length > 0 ? data.participants : undefined,
 					notes: data.notes || undefined,
 				};
 				await updateEvent(this.plugin.app, this.plugin.settings.eventsFolder, updatedEvent);

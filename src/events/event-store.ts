@@ -12,9 +12,8 @@ export async function saveEvent(
 		await app.vault.createFolder(folder);
 	}
 
-	const safeName = sanitizeFileName(event.title);
-	const fileName = `${safeName}-${event.id}.md`;
-	const filePath = normalizePath(`${folder}/${fileName}`);
+	const desiredFilePath = buildEventFilePath(folder, event);
+	const filePath = ensureUniqueEventFilePath(app, desiredFilePath);
 	const content = buildEventNote(event);
 
 	const existing = app.vault.getAbstractFileByPath(filePath);
@@ -36,8 +35,8 @@ export async function updateEvent(
 		const existingFile = app.vault.getAbstractFileByPath(event.filePath);
 		if (existingFile instanceof TFile) {
 			const folder = normalizePath(eventsFolder);
-			const safeName = sanitizeFileName(event.title);
-			const newFilePath = normalizePath(`${folder}/${safeName}-${event.id}.md`);
+			const desiredFilePath = buildEventFilePath(folder, event);
+			const newFilePath = ensureUniqueEventFilePath(app, desiredFilePath, existingFile.path);
 
 			if (existingFile.path !== newFilePath) {
 				await app.fileManager.renameFile(existingFile, newFilePath);
@@ -74,14 +73,27 @@ export async function loadEvents(
 		const content = await app.vault.cachedRead(child);
 		const fm = extractFrontmatter(content);
 
-		if (!fm || fm["lindar-event"] !== true) continue;
+		if (!fm) continue;
+
+		const allDay = frontmatterBoolean(fm.allDay);
+		if (allDay === false) continue;
+
+		const eventMarker = frontmatterBoolean(fm.event);
+		if (eventMarker === false) continue;
+
+		const startDate = frontmatterString(fm.date, frontmatterString(fm.start, ""));
+		if (!startDate) continue;
+
+		const endDate = frontmatterString(fm.endDate, frontmatterString(fm.end, startDate));
 
 		events.push({
-			id: frontmatterString(fm.id, child.basename),
+			id: frontmatterString(fm.uid, frontmatterString(fm.id, child.basename)),
 			title: frontmatterString(fm.title, "Untitled"),
-			start: frontmatterString(fm.start, ""),
-			end: frontmatterString(fm.end, frontmatterString(fm.start, "")),
+			start: startDate,
+			end: endDate,
 			color: frontmatterString(fm.color, "#4f46e5"),
+			type: optionalFrontmatterString(fm.type),
+			participants: frontmatterStringList(fm.participants),
 			notes: optionalFrontmatterString(fm.notes),
 			filePath: child.path,
 		});
@@ -140,16 +152,60 @@ function optionalFrontmatterString(value: unknown): string | undefined {
 	return undefined;
 }
 
+function frontmatterBoolean(value: unknown): boolean | undefined {
+	if (typeof value === "boolean") {
+		return value;
+	}
+
+	if (typeof value === "string") {
+		if (value === "true") return true;
+		if (value === "false") return false;
+	}
+
+	return undefined;
+}
+
+function frontmatterStringList(value: unknown): string[] | undefined {
+	if (Array.isArray(value)) {
+		const items = value
+			.map((item) => optionalFrontmatterString(item)?.trim())
+			.filter((item): item is string => Boolean(item));
+		return items.length > 0 ? items : undefined;
+	}
+
+	const single = optionalFrontmatterString(value)?.trim();
+	if (!single) return undefined;
+
+	const parts = single
+		.split(/\r?\n|,/)
+		.map((item) => item.trim())
+		.filter(Boolean);
+
+	return parts.length > 0 ? parts : undefined;
+}
+
 function buildEventNote(event: LindarEvent): string {
 	const lines: string[] = [
 		"---",
-		"lindar-event: true",
-		`id: ${event.id}`,
+		`uid: ${yamlString(event.id)}`,
+		"event: true",
+		"allDay: true",
 		`title: ${yamlString(event.title)}`,
-		`start: ${event.start}`,
-		`end: ${event.end}`,
+		`date: ${event.start}`,
+		`endDate: ${event.end}`,
 		`color: "${event.color}"`,
 	];
+
+	if (event.type) {
+		lines.push(`type: ${yamlString(event.type)}`);
+	}
+
+	if (event.participants && event.participants.length > 0) {
+		lines.push("participants:");
+		for (const participant of event.participants) {
+			lines.push(`  - ${yamlString(participant)}`);
+		}
+	}
 
 	if (event.notes) {
 		lines.push(`notes: ${yamlString(event.notes)}`);
@@ -179,6 +235,32 @@ function sanitizeFileName(title: string): string {
 			.toLowerCase()
 			.slice(0, 40) || "event"
 	);
+}
+
+function normalizeDateStamp(value: string): string {
+	return /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : "0000-00-00";
+}
+
+function buildEventFilePath(folder: string, event: LindarEvent): string {
+	const safeName = sanitizeFileName(event.title);
+	const dateStamp = normalizeDateStamp(event.start);
+	const fileName = `${dateStamp}-${safeName}.md`;
+	return normalizePath(`${folder}/${fileName}`);
+}
+
+function ensureUniqueEventFilePath(app: App, desiredPath: string, preservePath?: string): string {
+	const basePath = desiredPath.replace(/\.md$/i, "");
+	let candidatePath = desiredPath;
+	let index = 2;
+
+	for (;;) {
+		const existing = app.vault.getAbstractFileByPath(candidatePath);
+		if (!(existing instanceof TFile) || existing.path === preservePath) {
+			return candidatePath;
+		}
+		candidatePath = `${basePath}-${index}.md`;
+		index++;
+	}
 }
 
 export function generateEventId(): string {

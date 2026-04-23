@@ -73,6 +73,8 @@ The plugin is being designed around these principles:
 - **Click a date cell** to open a popup and create an event
 - **Click-drag across cells** to create a multi-day selection
 - **Start and end dates** editable in the popup
+- **Free-text event type** with lightweight suggestions like `appointment`, `call`, `meal`, or `meeting`
+- **Participants list** captured directly in the popup, one per line
 - **Native OS color picker** when available, with a curated palette fallback
 - **Single-day and multi-day events** rendered directly on the grid
 - **Cross-week, cross-month, and cross-row continuity** for longer events
@@ -90,14 +92,50 @@ Example event note shape:
 
 ```yaml
 ---
-lindar-event: true
+uid: abc123
+event: true
+allDay: true
 title: Birthday party
-start: 2026-04-20
-end: 2026-04-22
+date: 2026-04-20
+endDate: 2026-04-22
 color: "#e74c3c"
+type: appointment
+participants:
+    - Alice
+    - Bob
 ---
 Optional notes about the event...
 ```
+
+### Event frontmatter
+
+linDar stores each calendar item as a Markdown note with YAML frontmatter.
+
+- `uid`: stable internal event id
+- `event: true`: explicit marker for linDar event notes
+- `allDay: true`: current storage mode for yearly bar rendering
+- `title`: visible label in the calendar
+- `date`: start date in `YYYY-MM-DD`
+- `endDate`: inclusive end date in `YYYY-MM-DD`
+- `color`: event bar color
+- `type`: optional free-text classifier
+- `participants`: optional YAML list of people involved
+- note body: optional notes/details
+
+`type` stays intentionally free-form.
+
+That means you can use familiar values like:
+
+- `appointment`
+- `call`
+- `meal`
+- `meeting`
+- `travel`
+- `deadline`
+
+...or any label matching your own workflow.
+
+Existing older event notes without `event`, `type`, or `participants` remain compatible.
 
 
 ## Technical direction
@@ -178,6 +216,7 @@ The plugin is actively moving from event rendering toward scroll and layout poli
 - [x] Improve month-list wheel capture, scroll behavior, and responsive lane layout
 - [x] Finalize month event lane scrolling in empty tail areas
 - [x] Polish event bars: spacing, contrast, and overflow
+- [x] Add optional event type and participants metadata to stored event notes
 - [ ] Complete release readiness documentation and tests
 
 ### Scaling and performance backlog (deferred)
