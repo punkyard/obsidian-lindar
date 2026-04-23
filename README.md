@@ -227,6 +227,8 @@ The roadmap assumes a typical Obsidian plugin layout like:
 
 The plugin is actively moving from event rendering toward scroll and layout polish.
 
+> Note: feature branch `feature/phase3-event-creation` is ready locally. Further linDar work will continue in a separate conversation.
+>
 - [x] Yearly horizontal calendar grid with sticky month labels and headers
 - [x] Event creation popup and markdown-backed event storage
 - [x] Single-day and multi-day event rendering in month rows
