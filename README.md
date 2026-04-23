@@ -39,7 +39,14 @@ challenge your actions
 
 The goal is simple: show the whole year at once, with **one line per month**, **days flowing horizontally**, and enough visual clarity to make longer time horizons feel natural again.
 
-This project is inspired by Nick Milo's call for a more useful yearly calendar view, and by the broader idea that our planning tools should help us think beyond the current week or month.
+This project is inspired by Nick Milo's call for a more useful yearly calendar view, and by the broader idea that planning tools should support thinking beyond the current week or month.
+
+## Quick start
+
+1. Open the `linDar` view from the ribbon icon or command palette.
+2. Click a date (or drag across dates) to create an event.
+3. Fill in title, date range, color, and optional metadata (`type`, `participants`).
+4. Save: the event is written as a Markdown note in your configured events folder.
 
 ## Target experience
 
@@ -137,6 +144,12 @@ That means you can use familiar values like:
 
 Existing older event notes without `event`, `type`, or `participants` remain compatible.
 
+### Compatibility notes
+
+- Older event notes continue loading even if they only have legacy fields.
+- `event: false` is treated as a deliberate opt-out and will not be loaded.
+- `participants` can be stored as a YAML list; empty values are ignored.
+
 
 ## Technical direction
 
@@ -203,6 +216,12 @@ The roadmap assumes a typical Obsidian plugin layout like:
 - use Obsidian APIs for settings, commands, views, and cleanup registration
 - keep startup work light and defer heavy rendering until needed
 - avoid network behavior in v1 unless clearly documented and user-controlled
+
+### Notes for contributors
+
+- Keep `type` free-form (do not enforce a strict enum).
+- Treat schema additions as backward-compatible unless explicitly marked breaking.
+- Prefer small frontmatter keys and stable semantics across releases.
 
 ## Current development status
 
