@@ -11,6 +11,7 @@ export default class LindarPlugin extends Plugin {
 
 		this.registerView(VIEW_TYPE_LINDAR, (leaf) => new LindarYearView(leaf, this));
 
+		// eslint-disable-next-line obsidianmd/ui/sentence-case -- brand casing is intentional
 		this.addRibbonIcon("calendar", "linDar", () => {
 			void this.activateView();
 		});

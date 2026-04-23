@@ -128,6 +128,7 @@ export class EventModal extends Modal {
 			attr: {
 				type: "text",
 				id: "lindar-type",
+				// eslint-disable-next-line obsidianmd/ui/sentence-case -- keep lowercase examples
 				placeholder: "appointment, call, meal, meeting…",
 				list: "lindar-event-types",
 			},

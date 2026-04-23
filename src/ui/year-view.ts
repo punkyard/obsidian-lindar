@@ -32,6 +32,7 @@ export class LindarYearView extends ItemView {
 	}
 
 	getDisplayText(): string {
+		// eslint-disable-next-line obsidianmd/ui/sentence-case -- brand casing is intentional
 		return "linDar";
 	}
 
@@ -60,6 +61,7 @@ export class LindarYearView extends ItemView {
 		yearBtn.onclick = () => this.showYearDropdown(yearBtn);
 
 		const todayBtn = yearControls.createEl("button");
+		// eslint-disable-next-line obsidianmd/ui/sentence-case -- product UX preference
 		todayBtn.setText("today");
 		todayBtn.setAttribute("aria-label", "Today");
 		todayBtn.setAttribute("title", "Go to current year");
@@ -173,8 +175,10 @@ export class LindarYearView extends ItemView {
 		const btnRect = element.getBoundingClientRect();
 		const parentRect = parentEl.getBoundingClientRect();
 		const center = btnRect.left - parentRect.left + btnRect.width / 2;
-		dropdown.style.left = `${center}px`;
-		dropdown.style.transform = "translateX(-50%)";
+		dropdown.setCssProps({
+			left: `${center}px`,
+			transform: "translateX(-50%)",
+		});
 
 		// Scroll so current year is centered
 		const currentOption = scrollContainer.querySelector(".lindar-year-current");
