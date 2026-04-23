@@ -6,6 +6,8 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-04-23
+
 ### Added
 - Event metadata schema fields: `event: true`, optional `type`, optional `participants`.
 - Event modal inputs for free-text `type` and line-based `participants`.
