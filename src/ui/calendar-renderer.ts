@@ -4,7 +4,7 @@
  * Saturday and Sunday have weekend styling.
  */
 
-import { getEventColorTone, getRelatedEventLabelColor } from "../utils/colors";
+import { getContrastTextColor, getEventColorTone, getRelatedEventLabelColor } from "../utils/colors";
 import { getDaysInMonth, getFirstDayOfWeek, isToday, isWeekend, getWeekdayLabels, getMonthNameShort, getWeekNumber, isMonday } from "../utils/dates";
 import type { LindarEvent } from "../types";
 
@@ -249,10 +249,10 @@ function renderMonthEventBars(
 		bar.setAttribute("data-event-id", event.id);
 		const barTone = getEventColorTone(event.color);
 		bar.addClass(barTone === "dark" ? "lindar-event-bar-dark" : "lindar-event-bar-light");
-		const labelColor = getRelatedEventLabelColor(event.color);
+		const textColor = getContrastTextColor(event.color);
 		bar.style.setProperty("--event-color", event.color);
-		bar.style.setProperty("--event-text-color", labelColor);
-		bar.style.color = labelColor;
+		bar.style.setProperty("--event-text-color", textColor);
+		bar.style.color = textColor;
 		bar.style.gridColumn = `${startCol} / ${endColExclusive}`;
 		bar.style.gridRow = String(laneIndex + 1);
 		bar.setAttribute("title", `${event.title} (${event.start} → ${event.end})`);

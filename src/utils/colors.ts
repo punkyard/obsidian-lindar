@@ -1,10 +1,8 @@
 export function getContrastTextColor(color: string): string {
-	const hex = parseHexColor(color.trim());
-	if (!hex) return "#fff";
+	const parsed = parseColorToRgb(color.trim());
+	if (!parsed) return "#fff";
 
-	const r = parseInt(hex.slice(1, 3), 16);
-	const g = parseInt(hex.slice(3, 5), 16);
-	const b = parseInt(hex.slice(5, 7), 16);
+	const { r, g, b } = parsed;
 	const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
 	return luminance > 0.65 ? "#111" : "#fff";
 }

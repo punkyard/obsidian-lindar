@@ -27,7 +27,7 @@ export class LindarYearView extends ItemView {
 	}
 
 	getDisplayText(): string {
-		return "Year view";
+		return "linDar";
 	}
 
 	getIcon(): string {

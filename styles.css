@@ -17,40 +17,42 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	padding: 0.3rem 0.5rem;
+	padding: 0.28rem 0.2rem 0.24rem 0.16rem;
 	border-bottom: none;
 	background-color: var(--background-primary);
 	flex-shrink: 0;
-	gap: 0.5rem;
+	gap: 0.35rem;
 }
 
 .lindar-year-controls {
 	display: inline-flex;
 	align-items: center;
-	gap: 0.12rem;
+	gap: 0.08rem;
 	position: relative;
 }
 
 .lindar-year-btn {
-	font-weight: 700 !important;
-	font-size: 0.9rem !important;
-	min-width: 3.5rem;
+	font-weight: 650 !important;
+	font-size: 0.86rem !important;
+	min-width: 3.1rem;
 	text-align: center;
 }
 
 .lindar-nav-bar button {
-	padding: 0.1rem 0.32rem;
-	font-size: 0.85rem;
-	background-color: var(--background-secondary);
-	border: 1px solid color-mix(in srgb, var(--background-modifier-border) 75%, transparent);
-	border-radius: 4px;
+	padding: 0.06rem 0.26rem;
+	font-size: 0.8rem;
+	background-color: color-mix(in srgb, var(--background-secondary) 62%, transparent);
+	border: 1px solid color-mix(in srgb, var(--background-modifier-border) 48%, transparent);
+	border-radius: 3px;
+	box-shadow: none;
 	cursor: pointer;
-	transition: background-color 0.15s ease;
-	line-height: 1.2;
+	transition: background-color 0.15s ease, border-color 0.15s ease;
+	line-height: 1.05;
 }
 
 .lindar-nav-bar button:hover {
-	background-color: var(--background-modifier-hover);
+	background-color: color-mix(in srgb, var(--background-modifier-hover) 62%, transparent);
+	border-color: color-mix(in srgb, var(--background-modifier-border) 75%, transparent);
 }
 
 .lindar-motto-display {
@@ -117,7 +119,8 @@
 }
 
 .lindar-wrapper-scrollable-months .lindar-months-grid {
-	flex: 1 1 auto;
+	flex: 0 0 auto;
+	max-height: calc(100% - (var(--lindar-weekday-row-height) * 2));
 	overflow-y: auto;
 	overflow-x: hidden;
 }
@@ -343,7 +346,7 @@
 	grid-template-rows: repeat(var(--lindar-total-event-lanes), var(--lindar-event-lane-height));
 	grid-auto-rows: var(--lindar-event-lane-height);
 	row-gap: var(--lindar-event-lane-gap);
-	pointer-events: auto;
+	pointer-events: none;
 	z-index: 3;
 	overflow: hidden;
 }
