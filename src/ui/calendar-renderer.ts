@@ -6,7 +6,7 @@
 
 import { getContrastTextColor, getEventColorTone } from "../utils/colors";
 import { getDaysInMonth, getFirstDayOfWeek, isToday, isWeekend, getWeekdayLabels, getMonthNameShort, getWeekNumber, isMonday } from "../utils/dates";
-import type { LindarEvent } from "../types";
+import type { LinearCalendarEvent } from "../types";
 
 const MAX_COLS = 37; // 6 (max offset) + 31 (max days in month)
 const MONTH_BASE_HEIGHT = 24;
@@ -23,13 +23,13 @@ export interface CalendarLayoutOptions {
 export function renderCalendar(
 	container: HTMLElement,
 	year: number,
-	events: LindarEvent[],
+	events: LinearCalendarEvent[],
 	onDateClick?: (dateStr: string) => void,
-	onEventClick?: (event: LindarEvent) => void,
+	onEventClick?: (event: LinearCalendarEvent) => void,
 	options?: CalendarLayoutOptions
 ): void {
 	container.empty();
-	container.addClass("lindar-calendar");
+	container.addClass("linear-calendar-calendar");
 	const layoutOptions = options ?? {
 		maxVisibleEventLanes: 0,
 		adaptMonthLanesToEvents: false,
@@ -37,20 +37,20 @@ export function renderCalendar(
 		responsiveLaneLimit: 1,
 	};
 
-	container.classList.toggle("lindar-mode-adaptive", layoutOptions.adaptMonthLanesToEvents);
-	container.classList.toggle("lindar-mode-compact", !layoutOptions.adaptMonthLanesToEvents);
+	container.classList.toggle("linear-calendar-mode-adaptive", layoutOptions.adaptMonthLanesToEvents);
+	container.classList.toggle("linear-calendar-mode-compact", !layoutOptions.adaptMonthLanesToEvents);
 
-	const wrapper = container.createDiv("lindar-wrapper");
+	const wrapper = container.createDiv("linear-calendar-wrapper");
 	if (layoutOptions.adaptMonthLanesToEvents) {
-		wrapper.addClass("lindar-wrapper-scrollable-months");
+		wrapper.addClass("linear-calendar-wrapper-scrollable-months");
 	} else {
-		wrapper.addClass("lindar-wrapper-compact-months");
+		wrapper.addClass("linear-calendar-wrapper-compact-months");
 	}
 
 	// Top weekday row
-	renderWeekdayRow(wrapper, "lindar-header-row lindar-header-row-top");
+	renderWeekdayRow(wrapper, "linear-calendar-header-row linear-calendar-header-row-top");
 
-	const monthsGrid = wrapper.createDiv("lindar-months-grid");
+	const monthsGrid = wrapper.createDiv("linear-calendar-months-grid");
 
 	// 12 month rows
 	for (let month = 1; month <= 12; month++) {
@@ -58,50 +58,50 @@ export function renderCalendar(
 	}
 
 	// Bottom weekday row (repeated day line)
-	renderWeekdayRow(wrapper, "lindar-header-row lindar-header-row-bottom");
+	renderWeekdayRow(wrapper, "linear-calendar-header-row linear-calendar-header-row-bottom");
 }
 
 function renderWeekdayRow(wrapper: HTMLElement, className: string): void {
 	const headerRow = wrapper.createDiv(className);
-	headerRow.createDiv("lindar-weekday-side");
+	headerRow.createDiv("linear-calendar-weekday-side");
 
 	const weekdayLabels = getWeekdayLabels();
 	for (let i = 0; i < MAX_COLS; i++) {
 		const dayIndex = i % 7;
-		const cell = headerRow.createDiv("lindar-weekday-cell");
+		const cell = headerRow.createDiv("linear-calendar-weekday-cell");
 		cell.setText(weekdayLabels[dayIndex] || "");
 		if (isWeekend(dayIndex)) {
-			cell.addClass("lindar-weekend");
+			cell.addClass("linear-calendar-weekend");
 		}
 	}
 
-	headerRow.createDiv("lindar-weekday-side");
+	headerRow.createDiv("linear-calendar-weekday-side");
 }
 
 function renderMonthRow(
 	wrapper: HTMLElement,
 	year: number,
 	month: number,
-	events: LindarEvent[],
+	events: LinearCalendarEvent[],
 	layoutOptions: CalendarLayoutOptions,
 	onDateClick?: (dateStr: string) => void,
-	onEventClick?: (event: LindarEvent) => void
+	onEventClick?: (event: LinearCalendarEvent) => void
 ): void {
-	const monthRow = wrapper.createDiv("lindar-month-row");
+	const monthRow = wrapper.createDiv("linear-calendar-month-row");
 
 	// Month label (sticky left)
-	const monthLabel = monthRow.createDiv("lindar-month-label");
+	const monthLabel = monthRow.createDiv("linear-calendar-month-label");
 	monthLabel.setText(getMonthNameShort(month));
 
 	const daysInMonth = getDaysInMonth(year, month);
 	const firstDayOffset = getFirstDayOfWeek(year, month);
 
 	for (let i = 0; i < firstDayOffset; i++) {
-		monthRow.createDiv("lindar-cell lindar-empty");
+		monthRow.createDiv("linear-calendar-cell linear-calendar-empty");
 	}
 
 	for (let day = 1; day <= daysInMonth; day++) {
-		const cell = monthRow.createDiv("lindar-cell");
+		const cell = monthRow.createDiv("linear-calendar-cell");
 		const dateStr = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 		cell.setAttribute("data-date", dateStr);
 
@@ -109,26 +109,26 @@ function renderMonthRow(
 
 		if (isMonday(dayOfWeek)) {
 			const weekNum = getWeekNumber(year, month, day);
-			const weekDisplay = cell.createDiv("lindar-week-number");
+			const weekDisplay = cell.createDiv("linear-calendar-week-number");
 			weekDisplay.setText(String(weekNum));
 		}
 
-		const dateNumber = cell.createDiv("lindar-date-number");
+		const dateNumber = cell.createDiv("linear-calendar-date-number");
 		dateNumber.setText(String(day));
 
 		if (isToday(year, month, day)) {
-			cell.addClass("lindar-today");
+			cell.addClass("linear-calendar-today");
 		}
 
 		if (isWeekend(dayOfWeek)) {
-			cell.addClass("lindar-weekend");
+			cell.addClass("linear-calendar-weekend");
 		}
 
 		// Click handler
 		if (onDateClick) {
-			cell.addClass("lindar-cell-clickable");
+			cell.addClass("linear-calendar-cell-clickable");
 			cell.addEventListener("click", (e) => {
-				if ((e.target as HTMLElement).closest(".lindar-event-bar")) return;
+				if ((e.target as HTMLElement).closest(".linear-calendar-event-bar")) return;
 				onDateClick(dateStr);
 			});
 		}
@@ -137,11 +137,11 @@ function renderMonthRow(
 	const totalCells = firstDayOffset + daysInMonth;
 	const remainingCells = MAX_COLS - totalCells;
 	for (let i = 0; i < remainingCells; i++) {
-		monthRow.createDiv("lindar-cell lindar-empty");
+		monthRow.createDiv("linear-calendar-cell linear-calendar-empty");
 	}
 
 	// Repeat month label on right (sticky right)
-	const monthLabelRight = monthRow.createDiv("lindar-month-label lindar-month-label-right");
+	const monthLabelRight = monthRow.createDiv("linear-calendar-month-label linear-calendar-month-label-right");
 	monthLabelRight.setText(getMonthNameShort(month));
 
 	const {
@@ -155,12 +155,12 @@ function renderMonthRow(
 	applyMonthRowLayout(monthRow, visibleLanes, rowHeightLanes, totalLanes, layoutOptions);
 
 	if (eventsLayer && totalLanes > visibleLanes && !layoutOptions.adaptMonthLanesToEvents) {
-		eventsLayer.addClass("lindar-events-layer-scrollable");
-		monthRow.addClass("lindar-month-row-scrollable");
+		eventsLayer.addClass("linear-calendar-events-layer-scrollable");
+		monthRow.addClass("linear-calendar-month-row-scrollable");
 		monthRow.addEventListener("wheel", (event) => {
 			if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
 			const deltaY = event.deltaY;
-			const calendarScroller = monthRow.closest(".lindar-calendar-container");
+			const calendarScroller = monthRow.closest(".linear-calendar-calendar-container");
 
 			const scrollCalendar = () => {
 				if (!(calendarScroller instanceof HTMLElement)) return;
@@ -217,8 +217,8 @@ function renderMonthEventBars(
 	month: number,
 	daysInMonth: number,
 	firstDayOffset: number,
-	events: LindarEvent[],
-	onEventClick?: (event: LindarEvent) => void
+	events: LinearCalendarEvent[],
+	onEventClick?: (event: LinearCalendarEvent) => void
 ): {
 	eventsLayer: HTMLElement | null;
 	totalLanes: number;
@@ -245,7 +245,7 @@ function renderMonthEventBars(
 		};
 	}
 
-	const eventsLayer = monthRow.createDiv("lindar-events-layer");
+	const eventsLayer = monthRow.createDiv("linear-calendar-events-layer");
 	const laneLastEndCol: number[] = [];
 	let minEventCol: number | null = null;
 	let maxEventCol: number | null = null;
@@ -271,11 +271,11 @@ function renderMonthEventBars(
 			laneLastEndCol[laneIndex] = endColExclusive - 1;
 		}
 
-		const bar = eventsLayer.createDiv("lindar-event-bar");
+		const bar = eventsLayer.createDiv("linear-calendar-event-bar");
 		bar.setText(event.title);
 		bar.setAttribute("data-event-id", event.id);
 		const barTone = getEventColorTone(event.color);
-		bar.addClass(barTone === "dark" ? "lindar-event-bar-dark" : "lindar-event-bar-light");
+		bar.addClass(barTone === "dark" ? "linear-calendar-event-bar-dark" : "linear-calendar-event-bar-light");
 		const textColor = getContrastTextColor(event.color);
 		bar.style.setProperty("--event-color", event.color);
 		bar.style.setProperty("--event-text-color", textColor);
@@ -284,8 +284,8 @@ function renderMonthEventBars(
 		bar.style.gridRow = String(laneIndex + 1);
 		bar.setAttribute("title", `${event.title} (${event.start} → ${event.end})`);
 
-		if (event.start < monthStart) bar.addClass("lindar-event-continues-left");
-		if (event.end > monthEnd) bar.addClass("lindar-event-continues-right");
+		if (event.start < monthStart) bar.addClass("linear-calendar-event-continues-left");
+		if (event.end > monthEnd) bar.addClass("linear-calendar-event-continues-right");
 
 		bar.addEventListener("mouseenter", () => {
 			toggleLinkedEventBarHoverState(bar, event.id, true);
@@ -312,15 +312,15 @@ function renderMonthEventBars(
 function toggleLinkedEventBarHoverState(sourceBar: HTMLElement, eventId: string, isHovered: boolean): void {
 	if (!eventId) return;
 
-	const calendarRoot = sourceBar.closest(".lindar-calendar");
+	const calendarRoot = sourceBar.closest(".linear-calendar-calendar");
 	const scope = calendarRoot instanceof HTMLElement ? calendarRoot : sourceBar.ownerDocument;
 	if (!scope) return;
 
-	const allBars = scope.querySelectorAll(".lindar-event-bar[data-event-id]");
+	const allBars = scope.querySelectorAll(".linear-calendar-event-bar[data-event-id]");
 	allBars.forEach((bar) => {
 		if (!(bar instanceof HTMLElement)) return;
 		if (bar.getAttribute("data-event-id") !== eventId) return;
-		bar.classList.toggle("lindar-event-bar-linked-hover", isHovered);
+		bar.classList.toggle("linear-calendar-event-bar-linked-hover", isHovered);
 	});
 }
 
@@ -361,9 +361,9 @@ function applyMonthRowLayout(
 		? layoutOptions.responsiveMonthRowHeight
 		: fallbackHeight;
 
-	monthRow.style.setProperty("--lindar-visible-event-lanes", String(visibleLanes));
-	monthRow.style.setProperty("--lindar-visible-event-gaps", String(Math.max(0, visibleLanes - 1)));
-	monthRow.style.setProperty("--lindar-total-event-lanes", String(Math.max(1, totalLanes)));
+	monthRow.style.setProperty("--linear-calendar-visible-event-lanes", String(visibleLanes));
+	monthRow.style.setProperty("--linear-calendar-visible-event-gaps", String(Math.max(0, visibleLanes - 1)));
+	monthRow.style.setProperty("--linear-calendar-total-event-lanes", String(Math.max(1, totalLanes)));
 	monthRow.style.height = `${rowHeight}px`;
 	monthRow.style.minHeight = `${rowHeight}px`;
 }

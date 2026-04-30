@@ -1,10 +1,10 @@
 import { App, normalizePath, parseYaml, TFile, TFolder } from "obsidian";
-import type { LindarEvent } from "../types";
+import type { LinearCalendarEvent } from "../types";
 
 export async function saveEvent(
 	app: App,
 	eventsFolder: string,
-	event: LindarEvent
+	event: LinearCalendarEvent
 ): Promise<void> {
 	const folder = normalizePath(eventsFolder);
 
@@ -27,7 +27,7 @@ export async function saveEvent(
 export async function updateEvent(
 	app: App,
 	eventsFolder: string,
-	event: LindarEvent
+	event: LinearCalendarEvent
 ): Promise<void> {
 	const content = buildEventNote(event);
 
@@ -57,7 +57,7 @@ export async function updateEvent(
 export async function loadEvents(
 	app: App,
 	eventsFolder: string
-): Promise<LindarEvent[]> {
+): Promise<LinearCalendarEvent[]> {
 	const folder = normalizePath(eventsFolder);
 	const abstractFile = app.vault.getAbstractFileByPath(folder);
 
@@ -65,7 +65,7 @@ export async function loadEvents(
 		return [];
 	}
 
-	const events: LindarEvent[] = [];
+	const events: LinearCalendarEvent[] = [];
 
 	for (const child of abstractFile.children) {
 		if (!(child instanceof TFile) || child.extension !== "md") continue;
@@ -184,7 +184,7 @@ function frontmatterStringList(value: unknown): string[] | undefined {
 	return parts.length > 0 ? parts : undefined;
 }
 
-function buildEventNote(event: LindarEvent): string {
+function buildEventNote(event: LinearCalendarEvent): string {
 	const lines: string[] = [
 		"---",
 		`uid: ${yamlString(event.id)}`,
@@ -241,7 +241,7 @@ function normalizeDateStamp(value: string): string {
 	return /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : "0000-00-00";
 }
 
-function buildEventFilePath(folder: string, event: LindarEvent): string {
+function buildEventFilePath(folder: string, event: LinearCalendarEvent): string {
 	const safeName = sanitizeFileName(event.title);
 	const dateStamp = normalizeDateStamp(event.start);
 	const fileName = `${dateStamp}-${safeName}.md`;

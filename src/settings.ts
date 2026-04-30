@@ -1,10 +1,10 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
-import LindarPlugin from "./main";
-import { LindarSettings } from "./types";
+import LinearCalendarPlugin from "./main";
+import { LinearCalendarSettings } from "./types";
 
 let laneCapDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 
-export const DEFAULT_SETTINGS: LindarSettings = {
+export const DEFAULT_SETTINGS: LinearCalendarSettings = {
 	eventsFolder: "lindar-events",
 	defaultColor: "#4f46e5",
 	motto: "Life is bigger than a week",
@@ -12,10 +12,10 @@ export const DEFAULT_SETTINGS: LindarSettings = {
 	adaptMonthLanesToEvents: false,
 };
 
-export class LindarSettingTab extends PluginSettingTab {
-	plugin: LindarPlugin;
+export class LinearCalendarSettingTab extends PluginSettingTab {
+	plugin: LinearCalendarPlugin;
 
-	constructor(app: App, plugin: LindarPlugin) {
+	constructor(app: App, plugin: LinearCalendarPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}

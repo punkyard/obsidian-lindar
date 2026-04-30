@@ -1,5 +1,5 @@
 import { App, Modal } from "obsidian";
-import type { LindarEvent } from "../types";
+import type { LinearCalendarEvent } from "../types";
 
 export interface EventFormData {
 	title: string;
@@ -16,7 +16,7 @@ export class EventModal extends Modal {
 	private readonly defaultColor: string;
 	private readonly onSave: (data: EventFormData) => Promise<void> | void;
 	private readonly onDelete?: () => Promise<void> | void;
-	private readonly existingEvent?: LindarEvent;
+	private readonly existingEvent?: LinearCalendarEvent;
 
 	private _titleInput!: HTMLInputElement;
 	private _startInput!: HTMLInputElement;
@@ -31,7 +31,7 @@ export class EventModal extends Modal {
 		initialDate: string,
 		defaultColor: string,
 		onSave: (data: EventFormData) => Promise<void> | void,
-		existingEvent?: LindarEvent,
+		existingEvent?: LinearCalendarEvent,
 		onDelete?: () => Promise<void> | void
 	) {
 		super(app);
@@ -44,7 +44,7 @@ export class EventModal extends Modal {
 
 	onOpen(): void {
 		const { contentEl } = this;
-		contentEl.addClass("lindar-event-modal");
+		contentEl.addClass("linear-calendar-event-modal");
 
 		contentEl.createEl("h2", {
 			text: this.existingEvent ? "Edit event" : "New event",
@@ -57,15 +57,15 @@ export class EventModal extends Modal {
 		});
 
 		// Title
-		const titleGroup = form.createDiv("lindar-modal-field");
+		const titleGroup = form.createDiv("linear-calendar-modal-field");
 		titleGroup.createEl("label", {
 			text: "Title",
-			attr: { for: "lindar-title" },
+			attr: { for: "linear-calendar-title" },
 		});
 		const titleInput = titleGroup.createEl("input", {
 			attr: {
 				type: "text",
-				id: "lindar-title",
+				id: "linear-calendar-title",
 				placeholder: "Event title",
 				required: "true",
 			},
@@ -74,25 +74,25 @@ export class EventModal extends Modal {
 		this._titleInput = titleInput;
 
 		// Start date
-		const startGroup = form.createDiv("lindar-modal-field");
+		const startGroup = form.createDiv("linear-calendar-modal-field");
 		startGroup.createEl("label", {
 			text: "Start",
-			attr: { for: "lindar-start" },
+			attr: { for: "linear-calendar-start" },
 		});
 		const startInput = startGroup.createEl("input", {
-			attr: { type: "date", id: "lindar-start", required: "true" },
+			attr: { type: "date", id: "linear-calendar-start", required: "true" },
 		});
 		startInput.value = this.existingEvent?.start ?? this.initialDate;
 		this._startInput = startInput;
 
 		// End date
-		const endGroup = form.createDiv("lindar-modal-field");
+		const endGroup = form.createDiv("linear-calendar-modal-field");
 		endGroup.createEl("label", {
 			text: "End",
-			attr: { for: "lindar-end" },
+			attr: { for: "linear-calendar-end" },
 		});
 		const endInput = endGroup.createEl("input", {
-			attr: { type: "date", id: "lindar-end", required: "true" },
+			attr: { type: "date", id: "linear-calendar-end", required: "true" },
 		});
 		endInput.value = this.existingEvent?.end ?? this.initialDate;
 		this._endInput = endInput;
@@ -106,52 +106,52 @@ export class EventModal extends Modal {
 
 		// Color
 		const colorGroup = form.createDiv(
-			"lindar-modal-field lindar-modal-field-color"
+			"linear-calendar-modal-field linear-calendar-modal-field-color"
 		);
 		colorGroup.createEl("label", {
 			text: "Color",
-			attr: { for: "lindar-color" },
+			attr: { for: "linear-calendar-color" },
 		});
 		const colorInput = colorGroup.createEl("input", {
-			attr: { type: "color", id: "lindar-color" },
+			attr: { type: "color", id: "linear-calendar-color" },
 		});
 		colorInput.value = this.existingEvent?.color ?? this.defaultColor;
 		this._colorInput = colorInput;
 
 		// Type
-		const typeGroup = form.createDiv("lindar-modal-field");
+		const typeGroup = form.createDiv("linear-calendar-modal-field");
 		typeGroup.createEl("label", {
 			text: "Type",
-			attr: { for: "lindar-type" },
+			attr: { for: "linear-calendar-type" },
 		});
 		const typeInput = typeGroup.createEl("input", {
 			attr: {
 				type: "text",
-				id: "lindar-type",
+				id: "linear-calendar-type",
 				// eslint-disable-next-line obsidianmd/ui/sentence-case -- keep lowercase examples
 				placeholder: "appointment, call, meal, meeting…",
-				list: "lindar-event-types",
+				list: "linear-calendar-event-types",
 			},
 		});
 		typeInput.value = this.existingEvent?.type ?? "";
 		this._typeInput = typeInput;
 
 		const typeSuggestions = form.createEl("datalist", {
-			attr: { id: "lindar-event-types" },
+			attr: { id: "linear-calendar-event-types" },
 		});
 		for (const type of ["appointment", "call", "meal", "meeting", "travel", "deadline", "task", "reminder", "other"]) {
 			typeSuggestions.createEl("option", { attr: { value: type } });
 		}
 
 		// Participants
-		const participantsGroup = form.createDiv("lindar-modal-field");
+		const participantsGroup = form.createDiv("linear-calendar-modal-field");
 		participantsGroup.createEl("label", {
 			text: "Participants",
-			attr: { for: "lindar-participants" },
+			attr: { for: "linear-calendar-participants" },
 		});
 		const participantsInput = participantsGroup.createEl("textarea", {
 			attr: {
-				id: "lindar-participants",
+				id: "linear-calendar-participants",
 				placeholder: "One participant per line",
 				rows: "3",
 			},
@@ -160,14 +160,14 @@ export class EventModal extends Modal {
 		this._participantsInput = participantsInput;
 
 		// Notes
-		const notesGroup = form.createDiv("lindar-modal-field");
+		const notesGroup = form.createDiv("linear-calendar-modal-field");
 		notesGroup.createEl("label", {
 			text: "Notes",
-			attr: { for: "lindar-notes" },
+			attr: { for: "linear-calendar-notes" },
 		});
 		const notesInput = notesGroup.createEl("textarea", {
 			attr: {
-				id: "lindar-notes",
+				id: "linear-calendar-notes",
 				placeholder: "Optional notes…",
 				rows: "3",
 			},
@@ -176,7 +176,7 @@ export class EventModal extends Modal {
 		this._notesInput = notesInput;
 
 		// Buttons
-		const buttons = form.createDiv("lindar-modal-buttons");
+		const buttons = form.createDiv("linear-calendar-modal-buttons");
 		const saveBtn = buttons.createEl("button", {
 			text: this.existingEvent ? "Save" : "Create",
 			attr: { type: "submit" },
@@ -194,7 +194,7 @@ export class EventModal extends Modal {
 				text: "Delete",
 				attr: { type: "button" },
 			});
-			deleteBtn.addClass("lindar-delete-btn");
+			deleteBtn.addClass("linear-calendar-delete-btn");
 			deleteBtn.onclick = () => {
 				void this.onDelete?.();
 				this.close();

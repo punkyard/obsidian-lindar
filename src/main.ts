@@ -1,30 +1,29 @@
 import { Plugin, WorkspaceLeaf } from "obsidian";
-import { DEFAULT_SETTINGS, LindarSettingTab } from "./settings";
-import type { LindarSettings } from "./types";
-import { LindarYearView, VIEW_TYPE_LINDAR } from "./ui/year-view";
+import { DEFAULT_SETTINGS, LinearCalendarSettingTab } from "./settings";
+import type { LinearCalendarSettings } from "./types";
+import { LinearCalendarYearView, VIEW_TYPE_LINEAR_CALENDAR } from "./ui/year-view";
 
-export default class LindarPlugin extends Plugin {
-	settings!: LindarSettings;
+export default class LinearCalendarPlugin extends Plugin {
+	settings!: LinearCalendarSettings;
 
 	async onload(): Promise<void> {
 		await this.loadSettings();
 
-		this.registerView(VIEW_TYPE_LINDAR, (leaf) => new LindarYearView(leaf, this));
+		this.registerView(VIEW_TYPE_LINEAR_CALENDAR, (leaf) => new LinearCalendarYearView(leaf, this));
 
-		// eslint-disable-next-line obsidianmd/ui/sentence-case -- brand casing is intentional
-		this.addRibbonIcon("calendar", "linDar", () => {
+		this.addRibbonIcon("calendar", "Linear Calendar", () => {
 			void this.activateView();
 		});
 
 		this.addCommand({
-			id: "open-lindar-view",
+			id: "open-linear-view",
 			name: "Open year view",
 			callback: () => {
 				void this.activateView();
 			},
 		});
 
-		this.addSettingTab(new LindarSettingTab(this.app, this));
+		this.addSettingTab(new LinearCalendarSettingTab(this.app, this));
 	}
 
 	onunload(): void {}
@@ -32,11 +31,11 @@ export default class LindarPlugin extends Plugin {
 	async activateView(): Promise<void> {
 		const { workspace } = this.app;
 
-		let leaf: WorkspaceLeaf | null = workspace.getLeavesOfType(VIEW_TYPE_LINDAR)[0] ?? null;
+		let leaf: WorkspaceLeaf | null = workspace.getLeavesOfType(VIEW_TYPE_LINEAR_CALENDAR)[0] ?? null;
 
 		if (!leaf) {
 			leaf = workspace.getLeaf(false);
-			await leaf.setViewState({ type: VIEW_TYPE_LINDAR, active: true });
+			await leaf.setViewState({ type: VIEW_TYPE_LINEAR_CALENDAR, active: true });
 		}
 
 		if (leaf) {
@@ -45,7 +44,7 @@ export default class LindarPlugin extends Plugin {
 	}
 
 	async loadSettings(): Promise<void> {
-		this.settings = Object.assign({}, DEFAULT_SETTINGS, (await this.loadData()) as Partial<LindarSettings>);
+		this.settings = Object.assign({}, DEFAULT_SETTINGS, (await this.loadData()) as Partial<LinearCalendarSettings>);
 	}
 
 	async saveSettings(): Promise<void> {
@@ -53,8 +52,8 @@ export default class LindarPlugin extends Plugin {
 	}
 
 	refreshCalendar(): void {
-		this.app.workspace.getLeavesOfType(VIEW_TYPE_LINDAR).forEach((leaf) => {
-			if (leaf.view instanceof LindarYearView) {
+		this.app.workspace.getLeavesOfType(VIEW_TYPE_LINEAR_CALENDAR).forEach((leaf) => {
+			if (leaf.view instanceof LinearCalendarYearView) {
 				leaf.view.refresh();
 			}
 		});

@@ -6,6 +6,11 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-04-30
+
+### Changed
+- Plugin renamed from **linDar** to **Linear Calendar** across all source files, CSS classes, identifiers, assets, and documentation.
+
 ## [0.1.1] - 2026-04-23
 
 ### Added

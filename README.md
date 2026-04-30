@@ -1,6 +1,6 @@
-# linDar
+# Linear Calendar
 
-catch: Yearly horizontal linear calendar plugin for Obsidian, designed for long-horizon planning
+catch: Yearly linear calendar plugin for Obsidian, designed for long-horizon planning
 
 Yet another calendar plugin for Obsidian, but:
 
@@ -8,16 +8,9 @@ Yet another calendar plugin for Obsidian, but:
 - horizontal
 - linear
 
-Because:
+Linear Calendar is a response to Nick Milo's request — in his video [The Most Useful Calendar View in 2025 That No One Told You About](https://youtu.be/SQHYj7x-t3A&t=702) from his channel [Linking Your Thinking](https://www.youtube.com/@linkingyourthinking)
 
-> Life is bigger than a week.
-
-⚠️ **linDar is in early development.**
-
-
-linDar is a response to Nick Milo's request — in his video [The Most Useful Calendar View in 2025 That No One Told You About](https://youtu.be/SQHYj7x-t3A&t=702) from his channel [Linking Your Thinking](https://www.youtube.com/@linkingyourthinking)
-
-we'd like to thank him for his approach and his inspiration that guided the visual interface of linDar calendar
+we'd like to thank him for his approach and his inspiration that guided the visual interface of Linear Calendar
 we, too, are very much concerned by the tools we are provided with by usual apps and websites
 
 ### why a yearly linear calendar?
@@ -35,7 +28,7 @@ challenge your actions
 
 ## Overview
 
-`linDar` is a yearly horizontal linear calendar plugin for Obsidian.
+`Linear Calendar` is a yearly horizontal linear calendar plugin for Obsidian.
 
 The goal is simple: show the whole year at once, with **one line per month**, **days flowing horizontally**, and enough visual clarity to make longer time horizons feel natural again.
 
@@ -43,7 +36,7 @@ This project is inspired by Nick Milo's call for a more useful yearly calendar v
 
 ## Quick start
 
-1. Open the `linDar` view from the ribbon icon or command palette.
+1. Open the `Linear Calendar` view from the ribbon icon or command palette.
 2. Click a date (or drag across dates) to create an event.
 3. Fill in title, date range, color, and optional metadata (`type`, `participants`).
 4. Save: the event is written as a Markdown note in your configured events folder.
@@ -116,10 +109,10 @@ Optional notes about the event...
 
 ### Event frontmatter
 
-linDar stores each calendar item as a Markdown note with YAML frontmatter.
+Linear Calendar stores each calendar item as a Markdown note with YAML frontmatter.
 
 - `uid`: stable internal event id
-- `event: true`: explicit marker for linDar event notes
+- `event: true`: explicit marker for Linear Calendar event notes
 - `allDay: true`: current storage mode for yearly bar rendering
 - `title`: visible label in the calendar
 - `date`: start date in `YYYY-MM-DD`
@@ -176,9 +169,9 @@ The expected development flow follows the standard Obsidian community plugin wor
 
 ### Recommended project bootstrap
 
-The safest starting point is the official Obsidian sample plugin structure, then adapt it for `linDar`:
+The safest starting point is the official Obsidian sample plugin structure, then adapt it for `Linear Calendar`:
 
-- clone or copy the sample plugin into `.obsidian/plugins/lindar`
+- clone or copy the sample plugin into `.obsidian/plugins/obsidian-lindar`
 - rename the plugin folder to match the final plugin `id`
 - update `manifest.json` with the correct plugin metadata
 - keep source files under `src/`
@@ -227,7 +220,7 @@ The roadmap assumes a typical Obsidian plugin layout like:
 
 The plugin is actively moving from event rendering toward scroll and layout polish.
 
-> Note: feature branch `feature/phase3-event-creation` is ready locally. Further linDar work will continue in a separate conversation.
+> Note: feature branch `feature/phase3-event-creation` is ready locally. Further Linear Calendar work will continue in a separate conversation.
 >
 - [x] Yearly horizontal calendar grid with sticky month labels and headers
 - [x] Event creation popup and markdown-backed event storage
@@ -268,7 +261,7 @@ For larger vaults and heavier usage, these advanced optimizations are intentiona
 - [x] Add strict TypeScript settings and Obsidian typings
 - [x] Implement settings persistence with `loadData()` and `saveData()`
 - [x] Register a custom Obsidian view for the calendar
-- [x] Add a ribbon icon and command to open linDar
+- [x] Add a ribbon icon and command to open Linear Calendar
 - [x] Run `npm install` and confirm `npm run dev` rebuilds successfully
 - [x] Test the plugin inside a separate development vault
 
@@ -336,7 +329,7 @@ For larger vaults and heavier usage, these advanced optimizations are intentiona
 
 ## Release readiness checklist
 
-When `linDar` is ready for release, this is the practical checklist to complete before submission:
+When `Linear Calendar` is ready for release, this is the practical checklist to complete before submission:
 
 ### Repository readiness
 

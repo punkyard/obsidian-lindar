@@ -1,4 +1,4 @@
-export interface LindarEvent {
+export interface LinearCalendarEvent {
 	id: string;
 	title: string;
 	start: string;
@@ -10,7 +10,7 @@ export interface LindarEvent {
 	filePath?: string;
 }
 
-export interface LindarSettings {
+export interface LinearCalendarSettings {
 	eventsFolder: string;
 	defaultColor: string;
 	motto: string;
