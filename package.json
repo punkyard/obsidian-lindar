@@ -1,6 +1,6 @@
 {
   "name": "obsidian-linear-calendar",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Yearly linear calendar plugin for Obsidian, designed for long-horizon planning",
   "main": "main.js",
   "type": "module",
