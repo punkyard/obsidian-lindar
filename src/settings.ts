@@ -5,7 +5,7 @@ import { LinearCalendarSettings } from "./types";
 let laneCapDebounceTimer: number | null = null;
 
 export const DEFAULT_SETTINGS: LinearCalendarSettings = {
-	eventsFolder: "lindar-events",
+	eventsFolder: "yearly-events",
 	defaultColor: "#4f46e5",
 	motto: "Life is bigger than a week",
 	maxVisibleEventLanes: 0,
@@ -29,7 +29,7 @@ export class LinearCalendarSettingTab extends PluginSettingTab {
 			.setDesc("Folder used to store calendar event notes.")
 			.addText((text) =>
 				text
-					.setPlaceholder("Example: lindar-events")
+					.setPlaceholder("Example: yearly-events")
 					.setValue(this.plugin.settings.eventsFolder)
 					.onChange(async (value) => {
 						this.plugin.settings.eventsFolder = value.trim() || DEFAULT_SETTINGS.eventsFolder;
