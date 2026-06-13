@@ -1,24 +1,23 @@
-# Linear Calendar
+# Lindar
 
-catch: Yearly linear calendar plugin for Obsidian, designed for long-horizon planning
-
-Yet another calendar plugin for Obsidian, but:
+Yet another yearly linear calendar plugin for Obsidian, designed for long-horizon planning, but:
 
 - yearly
 - horizontal
 - linear
 
-Linear Calendar is a response to Nick Milo's request — in his video [The Most Useful Calendar View in 2025 That No One Told You About](https://youtu.be/SQHYj7x-t3A&t=702) from his channel [Linking Your Thinking](https://www.youtube.com/@linkingyourthinking)
+Lindar is a response to Nick Milo's request — in his video [The Most Useful Calendar View in 2025 That No One Told You About](https://youtu.be/SQHYj7x-t3A&t=702) from his channel [Linking Your Thinking](https://www.youtube.com/@linkingyourthinking)
 
-we'd like to thank him for his approach and his inspiration that guided the visual interface of Linear Calendar
+We'd like to thank him for his approach and his inspiration that guided the visual interface of Linear Calendar
 we, too, are very much concerned by the tools we are provided with by usual apps and websites
 
-### why a yearly linear calendar?
+![](assets/hero.png)
+
+### Why a yearly linear calendar?
 
 - you might find answer to every aspect of this question in Milo's video
 - but put in simple words:
     - it's the possibililty to see your entire year on one page
-
 
 
 .. our calendar is bigger than a month
@@ -28,7 +27,7 @@ challenge your actions
 
 ## Overview
 
-`Linear Calendar` is a yearly horizontal linear calendar plugin for Obsidian.
+`Lindar` is a yearly horizontal linear calendar plugin for Obsidian.
 
 The goal is simple: show the whole year at once, with **one line per month**, **days flowing horizontally**, and enough visual clarity to make longer time horizons feel natural again.
 
@@ -37,9 +36,11 @@ This project is inspired by Nick Milo's call for a more useful yearly calendar v
 ## Quick start
 
 1. Open the `Linear Calendar` view from the ribbon icon or command palette.
-2. Click a date (or drag across dates) to create an event.
+2. Click a date (soon drag across dates) to create an event.
 3. Fill in title, date range, color, and optional metadata (`type`, `participants`).
 4. Save: the event is written as a Markdown note in your configured events folder.
+
+![](assets/event-details.png)
 
 ## Target experience
 
@@ -200,7 +201,7 @@ The roadmap assumes a typical Obsidian plugin layout like:
 - `esbuild.config.mjs` — bundling configuration
 - `versions.json` — plugin version compatibility map
 - `README.md` — user-facing documentation
-- `LICENSE` — GPL license text
+- `LICENSE` — MIT license text
 
 ### Development expectations
 
@@ -334,7 +335,7 @@ When `Linear Calendar` is ready for release, this is the practical checklist to 
 ### Repository readiness
 
 - [ ] `README.md` clearly explains what the plugin does and how to use it
-- [ ] `LICENSE` is present and matches **GPL-3.0-or-later**
+- [ ] `LICENSE` is present and matches **MIT**
 - [ ] `manifest.json` contains the correct `id`, `name`, `version`, `author`, `description`, `minAppVersion`, and `isDesktopOnly`
 - [ ] `versions.json` exists and includes an entry for the current release version
 - [ ] `main.js` is built and committed for release artifacts
@@ -379,9 +380,7 @@ In short: it has to look good.
 
 ## License
 
-This project is licensed under **[GPL-3.0](LICENSE)-or-later**.
-
-In practical terms, that means distributed modifications and derivative versions must also remain open source under GPL-compatible terms.
+This project is licensed under the **[MIT License](LICENSE)**.
 
 ---
 
