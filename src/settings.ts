@@ -2,7 +2,7 @@ import { App, PluginSettingTab, Setting } from "obsidian";
 import LinearCalendarPlugin from "./main";
 import { LinearCalendarSettings } from "./types";
 
-let laneCapDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+let laneCapDebounceTimer: number | null = null;
 
 export const DEFAULT_SETTINGS: LinearCalendarSettings = {
 	eventsFolder: "lindar-events",
@@ -90,10 +90,10 @@ export class LinearCalendarSettingTab extends PluginSettingTab {
 						if (!Number.isFinite(newValue) || newValue < 0) return;
 
 						if (laneCapDebounceTimer) {
-							clearTimeout(laneCapDebounceTimer);
-						}
+								window.clearTimeout(laneCapDebounceTimer);
+							}
 
-						laneCapDebounceTimer = setTimeout(() => {
+							laneCapDebounceTimer = window.setTimeout(() => {
 							void this.updateMaxVisibleEventLanes(newValue);
 						}, 500);
 					});
