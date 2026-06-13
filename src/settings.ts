@@ -1,4 +1,4 @@
-import { App, PluginSettingTab, Setting } from "obsidian";
+import { App, ColorComponent, PluginSettingTab, Setting } from "obsidian";
 import LinearCalendarPlugin from "./main";
 import { LinearCalendarSettings } from "./types";
 
@@ -37,6 +37,7 @@ export class LinearCalendarSettingTab extends PluginSettingTab {
 					})
 			);
 
+		let colorPicker: ColorComponent | null = null;
 		new Setting(containerEl)
 			.setName("Default event color")
 			.setDesc("Used as the default color when creating events.")
@@ -47,11 +48,12 @@ export class LinearCalendarSettingTab extends PluginSettingTab {
 					.onClick(async () => {
 						this.plugin.settings.defaultColor = DEFAULT_SETTINGS.defaultColor;
 						await this.plugin.saveSettings();
-						this.display();
+						colorPicker?.setValue(DEFAULT_SETTINGS.defaultColor);
 						this.plugin.refreshCalendar();
 					});
 			})
 			.addColorPicker((color) => {
+				colorPicker = color;
 				color.setValue(this.plugin.settings.defaultColor).onChange(async (value) => {
 					this.plugin.settings.defaultColor = value;
 					await this.plugin.saveSettings();
