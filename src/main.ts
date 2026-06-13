@@ -11,7 +11,7 @@ export default class LinearCalendarPlugin extends Plugin {
 
 		this.registerView(VIEW_TYPE_LINEAR_CALENDAR, (leaf) => new LinearCalendarYearView(leaf, this));
 
-		this.addRibbonIcon("calendar", "Linear Calendar", () => {
+			this.addRibbonIcon("calendar", "Lindar", () => {
 			void this.activateView();
 		});
 

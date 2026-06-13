@@ -128,8 +128,7 @@ export class EventModal extends Modal {
 			attr: {
 				type: "text",
 				id: "linear-calendar-type",
-				// eslint-disable-next-line obsidianmd/ui/sentence-case -- keep lowercase examples
-				placeholder: "appointment, call, meal, meeting…",
+				placeholder: "Appointment, call, meal, meeting…",
 				list: "linear-calendar-event-types",
 			},
 		});
@@ -201,7 +200,7 @@ export class EventModal extends Modal {
 			};
 		}
 
-		setTimeout(() => titleInput.focus(), 50);
+		window.setTimeout(() => titleInput.focus(), 50);
 	}
 
 	private submit(): void {

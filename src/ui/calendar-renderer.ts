@@ -318,7 +318,7 @@ function toggleLinkedEventBarHoverState(sourceBar: HTMLElement, eventId: string,
 
 	const allBars = scope.querySelectorAll(".linear-calendar-event-bar[data-event-id]");
 	allBars.forEach((bar) => {
-		if (!(bar instanceof HTMLElement)) return;
+		if (!bar.instanceOf(HTMLElement)) return;
 		if (bar.getAttribute("data-event-id") !== eventId) return;
 		bar.classList.toggle("linear-calendar-event-bar-linked-hover", isHovered);
 	});

@@ -32,7 +32,7 @@ export class LinearCalendarYearView extends ItemView {
 	}
 
 	getDisplayText(): string {
-		return "Linear Calendar";
+		return "Lindar";
 	}
 
 	getIcon(): string {
@@ -60,8 +60,7 @@ export class LinearCalendarYearView extends ItemView {
 		yearBtn.onclick = () => this.showYearDropdown(yearBtn);
 
 		const todayBtn = yearControls.createEl("button");
-		// eslint-disable-next-line obsidianmd/ui/sentence-case -- product UX preference
-		todayBtn.setText("today");
+		todayBtn.setText("Today");
 		todayBtn.setAttribute("aria-label", "Today");
 		todayBtn.setAttribute("title", "Go to current year");
 		todayBtn.onclick = () => {
@@ -141,14 +140,14 @@ export class LinearCalendarYearView extends ItemView {
 		const startYear = currentYear - 10;
 		const endYear = currentYear + 10;
 
-		const dropdown = document.createElement("div");
+		const dropdown = activeDocument.createElement("div");
 		dropdown.classList.add("linear-calendar-year-dropdown");
 
-		const scrollContainer = document.createElement("div");
+		const scrollContainer = activeDocument.createElement("div");
 		scrollContainer.classList.add("linear-calendar-year-dropdown-scroll");
 
 		for (let year = endYear; year >= startYear; year--) {
-			const option = document.createElement("div");
+			const option = activeDocument.createElement("div");
 			option.classList.add("linear-calendar-year-option");
 			if (year === currentYear) {
 				option.classList.add("linear-calendar-year-current");
@@ -182,7 +181,7 @@ export class LinearCalendarYearView extends ItemView {
 		// Scroll so current year is centered
 		const currentOption = scrollContainer.querySelector(".linear-calendar-year-current");
 		if (currentOption instanceof HTMLElement) {
-			setTimeout(() => currentOption.scrollIntoView({ block: "center" }), 0);
+			window.setTimeout(() => currentOption.scrollIntoView({ block: "center" }), 0);
 		}
 
 		const closeDropdown = (event: MouseEvent) => {
@@ -196,12 +195,12 @@ export class LinearCalendarYearView extends ItemView {
 			this.closeYearDropdown();
 		};
 
-		setTimeout(() => {
-			document.addEventListener("click", closeDropdown);
+		window.setTimeout(() => {
+			activeDocument.addEventListener("click", closeDropdown);
 		}, 100);
 
 		this.removeYearDropdownListener = () => {
-			document.removeEventListener("click", closeDropdown);
+			activeDocument.removeEventListener("click", closeDropdown);
 		};
 	}
 
@@ -229,7 +228,7 @@ export class LinearCalendarYearView extends ItemView {
 
 		if (this.pendingRenderFrame !== null) return;
 
-		this.pendingRenderFrame = requestAnimationFrame(() => {
+		this.pendingRenderFrame = window.requestAnimationFrame(() => {
 			this.pendingRenderFrame = null;
 
 			const target = this.pendingRenderContainer;

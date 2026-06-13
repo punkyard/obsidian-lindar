@@ -113,9 +113,9 @@ function parseColorToRgb(value: string): { r: number; g: number; b: number } | n
 
 function getColorProbeElement(): HTMLElement | null {
 	if (colorProbeEl?.isConnected) return colorProbeEl;
-	if (typeof document === "undefined") return null;
+	if (typeof activeDocument === "undefined") return null;
 
-	const probe = document.createElement("span");
+	const probe = activeDocument.createElement("span");
 	probe.setCssProps({
 		position: "fixed",
 		left: "-9999px",
@@ -127,7 +127,7 @@ function getColorProbeElement(): HTMLElement | null {
 		overflow: "hidden",
 	});
 
-	(document.body ?? document.documentElement).appendChild(probe);
+	(activeDocument.body ?? activeDocument.documentElement).appendChild(probe);
 	colorProbeEl = probe;
 	return probe;
 }

@@ -31,9 +31,9 @@
 	position: relative;
 }
 
-.linear-calendar-year-btn {
-	font-weight: 650 !important;
-	font-size: 0.86rem !important;
+.linear-calendar-nav-bar .linear-calendar-year-btn {
+	font-weight: 650;
+	font-size: 0.86rem;
 	min-width: 3.1rem;
 	text-align: center;
 }
@@ -353,6 +353,7 @@
 
 .linear-calendar-events-layer-scrollable {
 	overflow-y: auto;
+	/* hide scrollbar while keeping scroll functionality */
 	scrollbar-width: none;
 }
 
