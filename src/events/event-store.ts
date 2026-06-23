@@ -207,14 +207,12 @@ function buildEventNote(event: LinearCalendarEvent): string {
 		}
 	}
 
-	if (event.notes) {
-		lines.push(`notes: ${yamlString(event.notes)}`);
-	}
-
-	lines.push("---", "");
+	lines.push("---");
 
 	if (event.notes) {
 		lines.push(event.notes);
+	} else {
+		lines.push("");
 	}
 
 	return lines.join("\n");
