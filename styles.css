@@ -518,9 +518,7 @@
 	background-color: color-mix(in srgb, var(--color-red) 12%, transparent);
 }
 
-.linear-calendar-event-modal .linear-calendar-open-btn {
-	margin-left: auto;
-}
+
 
 /* Mobile: single-letter days, 2-letter months */
 @media (max-width: 600px) {
