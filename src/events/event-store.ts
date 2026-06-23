@@ -94,7 +94,7 @@ export async function loadEvents(
 			color: frontmatterString(fm.color, "#4f46e5"),
 			type: optionalFrontmatterString(fm.type),
 			participants: frontmatterStringList(fm.participants),
-			notes: optionalFrontmatterString(fm.notes),
+			description: optionalFrontmatterString(fm.description),
 			filePath: child.path,
 		});
 	}
@@ -207,14 +207,12 @@ function buildEventNote(event: LinearCalendarEvent): string {
 		}
 	}
 
-	if (event.notes) {
-		lines.push(`notes: ${yamlString(event.notes)}`);
-	}
+	lines.push("---");
 
-	lines.push("---", "");
-
-	if (event.notes) {
-		lines.push(event.notes);
+	if (event.description) {
+		lines.push(event.description);
+	} else {
+		lines.push("");
 	}
 
 	return lines.join("\n");

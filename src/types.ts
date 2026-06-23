@@ -6,7 +6,7 @@ export interface LinearCalendarEvent {
 	color: string;
 	type?: string;
 	participants?: string[];
-	notes?: string;
+	description?: string;
 	filePath?: string;
 }
 
