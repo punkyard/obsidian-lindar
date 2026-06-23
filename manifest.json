@@ -1,7 +1,7 @@
 {
 	"id": "lindar",
 	"name": "Lindar",
-	"version": "0.1.8",
+	"version": "1.2.1",
 	"minAppVersion": "1.7.2",
 	"description": "Yearly linear calendar designed for long-horizon planning.",
 	"author": "punkyard",
