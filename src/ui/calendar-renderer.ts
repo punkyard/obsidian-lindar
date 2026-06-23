@@ -1,11 +1,11 @@
 /**
  * Calendar renderer: builds the DOM grid for a yearly horizontal view.
  * One row per month, days flowing horizontally.
- * Saturday and Sunday have weekend styling.
+ * Saturday/Sunday have weekend styling, Wednesday has muted highlight.
  */
 
 import { getContrastTextColor, getEventColorTone } from "../utils/colors";
-import { getDaysInMonth, getFirstDayOfWeek, isToday, isWeekend, getWeekdayLabels, getMonthNameShort, getWeekNumber, isMonday } from "../utils/dates";
+import { getDaysInMonth, getFirstDayOfWeek, isToday, isWeekend, isWednesday, getWeekdayLabels, getWeekdayLabelsMobile, getMonthNameShort, getMonthNameShortMobile, getWeekNumber, isMonday } from "../utils/dates";
 import type { LinearCalendarEvent } from "../types";
 
 const MAX_COLS = 37; // 6 (max offset) + 31 (max days in month)
@@ -66,12 +66,19 @@ function renderWeekdayRow(wrapper: HTMLElement, className: string): void {
 	headerRow.createDiv("linear-calendar-weekday-side");
 
 	const weekdayLabels = getWeekdayLabels();
+	const weekdayLabelsMobile = getWeekdayLabelsMobile();
 	for (let i = 0; i < MAX_COLS; i++) {
 		const dayIndex = i % 7;
 		const cell = headerRow.createDiv("linear-calendar-weekday-cell");
 		cell.setText(weekdayLabels[dayIndex] || "");
+		cell.setAttribute("data-mb", weekdayLabelsMobile[dayIndex] || "");
 		if (isWeekend(dayIndex)) {
 			cell.addClass("linear-calendar-weekend");
+			if (dayIndex === 5) cell.addClass("linear-calendar-weekend-start");
+			if (dayIndex === 6) cell.addClass("linear-calendar-weekend-end");
+		}
+		if (isWednesday(dayIndex)) {
+			cell.addClass("linear-calendar-wednesday");
 		}
 	}
 
@@ -92,6 +99,7 @@ function renderMonthRow(
 	// Month label (sticky left)
 	const monthLabel = monthRow.createDiv("linear-calendar-month-label");
 	monthLabel.setText(getMonthNameShort(month));
+	monthLabel.setAttribute("data-mb", getMonthNameShortMobile(month));
 
 	const daysInMonth = getDaysInMonth(year, month);
 	const firstDayOffset = getFirstDayOfWeek(year, month);
@@ -122,6 +130,11 @@ function renderMonthRow(
 
 		if (isWeekend(dayOfWeek)) {
 			cell.addClass("linear-calendar-weekend");
+			if (dayOfWeek === 5) cell.addClass("linear-calendar-weekend-start");
+			if (dayOfWeek === 6) cell.addClass("linear-calendar-weekend-end");
+		}
+		if (isWednesday(dayOfWeek)) {
+			cell.addClass("linear-calendar-wednesday");
 		}
 
 		// Click handler
@@ -143,6 +156,7 @@ function renderMonthRow(
 	// Repeat month label on right (sticky right)
 	const monthLabelRight = monthRow.createDiv("linear-calendar-month-label linear-calendar-month-label-right");
 	monthLabelRight.setText(getMonthNameShort(month));
+	monthLabelRight.setAttribute("data-mb", getMonthNameShortMobile(month));
 
 	const {
 		eventsLayer,
