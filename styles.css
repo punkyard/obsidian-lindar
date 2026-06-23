@@ -93,7 +93,7 @@
 
 .linear-calendar-wrapper {
 	--linear-calendar-weekday-row-height: 18px;
-	--linear-calendar-weekend-bg: var(--background-secondary);
+	--linear-calendar-weekend-bg: color-mix(in srgb, var(--background-primary), var(--background-modifier-border-hover) 22%);
 	display: flex;
 	flex-direction: column;
 	width: max-content;
