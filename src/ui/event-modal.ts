@@ -1,4 +1,4 @@
-import { App, Modal } from "obsidian";
+import { App, Modal, TFile } from "obsidian";
 import type { LinearCalendarEvent } from "../types";
 
 export interface EventFormData {
@@ -196,6 +196,23 @@ export class EventModal extends Modal {
 			deleteBtn.addClass("linear-calendar-delete-btn");
 			deleteBtn.onclick = () => {
 				void this.onDelete?.();
+				this.close();
+			};
+		}
+
+		if (this.existingEvent) {
+			const openBtn = buttons.createEl("button", {
+				text: "Open note",
+				attr: { type: "button" },
+			});
+			openBtn.addClass("linear-calendar-open-btn");
+			openBtn.onclick = () => {
+				if (this.existingEvent?.filePath) {
+					const file = this.app.vault.getAbstractFileByPath(this.existingEvent.filePath);
+					if (file instanceof TFile) {
+						void this.app.workspace.getLeaf().openFile(file);
+					}
+				}
 				this.close();
 			};
 		}
