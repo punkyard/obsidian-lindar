@@ -17,7 +17,8 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	padding: 0.28rem 0.2rem 0.24rem 0.16rem;
+	padding: 0.14rem 0.2rem;
+	margin-bottom: 0.6rem;
 	border-bottom: none;
 	background-color: var(--background-primary);
 	flex-shrink: 0;
@@ -93,14 +94,14 @@
 
 .linear-calendar-wrapper {
 	--linear-calendar-weekday-row-height: 18px;
-	--linear-calendar-weekend-bg: color-mix(in srgb, var(--background-primary), var(--text-faint) 22%);
-	--linear-calendar-weekend-accent: color-mix(in srgb, transparent, var(--text-faint) 11%);
+	--linear-calendar-weekend-bg: color-mix(in srgb, var(--text-muted) 12%, var(--background-primary));
 	display: flex;
 	flex-direction: column;
 	width: max-content;
 	min-width: 100%;
 	min-height: 100%;
 }
+
 
 .linear-calendar-wrapper-scrollable-months {
 	height: 100%;
@@ -134,7 +135,6 @@
 	height: var(--linear-calendar-weekday-row-height);
 	min-height: var(--linear-calendar-weekday-row-height);
 	background-color: var(--background-primary);
-	border-bottom: 1px solid color-mix(in srgb, var(--background-modifier-border) 65%, transparent);
 	flex: 0 0 auto;
 }
 
@@ -146,8 +146,6 @@
 .linear-calendar-header-row-bottom {
 	position: relative;
 	z-index: 2;
-	border-top: 1px solid color-mix(in srgb, var(--background-modifier-border) 65%, transparent);
-	border-bottom: none;
 }
 
 .linear-calendar-weekday-side {
@@ -169,7 +167,10 @@
 
 .linear-calendar-weekday-cell.linear-calendar-weekend {
 	background-color: var(--linear-calendar-weekend-bg);
-	box-shadow: inset 2px 0 0 0 var(--linear-calendar-weekend-accent);
+}
+
+.linear-calendar-weekday-cell.linear-calendar-wednesday {
+	background-color: var(--linear-calendar-weekend-bg);
 }
 
 /* Month rows */
@@ -177,10 +178,10 @@
 	display: grid;
 	grid-template-columns: 60px repeat(37, minmax(22px, 1fr)) 60px;
 	gap: 0;
-	border-bottom: 1px solid color-mix(in srgb, var(--background-modifier-border) 25%, transparent);
 	min-height: 24px;
-	overflow: hidden;
 	position: relative;
+	overflow: hidden;
+	background-color: var(--background-primary);
 	--linear-calendar-event-lane-height: 14px;
 	--linear-calendar-event-lane-gap: 1px;
 	--linear-calendar-event-top-offset: 17px;
@@ -228,16 +229,47 @@
 
 .linear-calendar-cell.linear-calendar-empty {
 	background-color: transparent;
-	opacity: 0.2;
 }
 
 .linear-calendar-cell.linear-calendar-weekend {
 	background-color: var(--linear-calendar-weekend-bg);
-	box-shadow: inset 2px 0 0 0 var(--linear-calendar-weekend-accent);
+}
+
+.linear-calendar-cell.linear-calendar-wednesday {
+	background-color: var(--linear-calendar-weekend-bg);
 }
 
 .linear-calendar-cell.linear-calendar-weekend.linear-calendar-empty {
-	box-shadow: none;
+	background-color: transparent;
+}
+
+.linear-calendar-cell.linear-calendar-wednesday.linear-calendar-empty {
+	background-color: transparent;
+}
+
+/* Header row rounded corners */
+.linear-calendar-header-row-top .linear-calendar-weekday-cell.linear-calendar-weekend-start {
+	border-radius: 4px 0 0 0;
+}
+
+.linear-calendar-header-row-top .linear-calendar-weekday-cell.linear-calendar-weekend-end {
+	border-radius: 0 4px 0 0;
+}
+
+.linear-calendar-header-row-top .linear-calendar-weekday-cell.linear-calendar-wednesday {
+	border-radius: 4px 4px 0 0;
+}
+
+.linear-calendar-header-row-bottom .linear-calendar-weekday-cell.linear-calendar-weekend-start {
+	border-radius: 0 0 0 4px;
+}
+
+.linear-calendar-header-row-bottom .linear-calendar-weekday-cell.linear-calendar-weekend-end {
+	border-radius: 0 0 4px 0;
+}
+
+.linear-calendar-header-row-bottom .linear-calendar-weekday-cell.linear-calendar-wednesday {
+	border-radius: 0 0 4px 4px;
 }
 
 .linear-calendar-cell.linear-calendar-today {
@@ -278,7 +310,8 @@
 .linear-calendar-date-number {
 	position: absolute;
 	top: 2px;
-	right: 4px;
+	left: 50%;
+	transform: translateX(-50%);
 	font-size: 0.68rem;
 	font-weight: 600;
 	color: var(--text-normal);
@@ -334,11 +367,7 @@
 }
 
 .linear-calendar-cell-clickable:hover {
-	background-color: color-mix(in srgb, var(--background-modifier-hover) 68%, var(--background-primary));
-}
-
-.linear-calendar-cell.linear-calendar-weekend.linear-calendar-cell-clickable:hover {
-	background-color: color-mix(in srgb, var(--background-modifier-hover) 68%, var(--linear-calendar-weekend-bg));
+	background-image: linear-gradient(rgba(255,255,255,0.08), rgba(255,255,255,0.08));
 }
 
 /* Month-row event layer (below date numbers, above cells) */
@@ -366,18 +395,6 @@
 
 .linear-calendar-month-row-scrollable {
 	position: relative;
-}
-
-.linear-calendar-month-row-scrollable::after {
-	content: "";
-	position: absolute;
-	bottom: 0;
-	left: 60px;
-	right: 60px;
-	height: 6px;
-	background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--background-primary) 70%, transparent));
-	z-index: 5;
-	pointer-events: none;
 }
 
 .linear-calendar-event-bar {
@@ -500,4 +517,26 @@
 
 .linear-calendar-event-modal .linear-calendar-delete-btn:hover {
 	background-color: color-mix(in srgb, var(--color-red) 12%, transparent);
+}
+
+/* Mobile: single-letter days, 2-letter months */
+@media (max-width: 600px) {
+	.linear-calendar-weekday-cell {
+		font-size: 0;
+	}
+	.linear-calendar-weekday-cell::before {
+		content: attr(data-mb);
+		font-size: 0.66rem;
+		font-weight: 600;
+	}
+	.linear-calendar-month-label {
+		font-weight: 600;
+		text-align: center;
+		font-size: 0;
+	}
+	.linear-calendar-month-label::before {
+		content: attr(data-mb);
+		font-size: 0.66rem;
+		font-weight: 600;
+	}
 }

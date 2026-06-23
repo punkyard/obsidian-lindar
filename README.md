@@ -1,4 +1,5 @@
-# Lindar
+# Lindar is under development
+> accept breaking changes
 
 Yet another yearly linear calendar plugin for Obsidian, designed for long-horizon planning, but:
 

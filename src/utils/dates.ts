@@ -36,26 +36,30 @@ export function isWeekend(dayOfWeek: number): boolean {
 	return dayOfWeek === 5 || dayOfWeek === 6;
 }
 
-export function getWeekdayLabels(): string[] {
-	return ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+export function isWednesday(dayOfWeek: number): boolean {
+	return dayOfWeek === 2;
 }
 
+const WEEKDAY_LABELS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+const WEEKDAY_LABELS_MOBILE = ["M", "T", "W", "T", "F", "S", "S"];
+
+export function getWeekdayLabels(): string[] {
+	return WEEKDAY_LABELS;
+}
+
+export function getWeekdayLabelsMobile(): string[] {
+	return WEEKDAY_LABELS_MOBILE;
+}
+
+const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const MONTH_NAMES_MOBILE = ["Ja", "Fe", "Ma", "Ap", "Ma", "Ju", "Ju", "Au", "Se", "Oc", "No", "De"];
+
 export function getMonthNameShort(month: number): string {
-	const names = [
-		"Jan",
-		"Feb",
-		"Mar",
-		"Apr",
-		"May",
-		"Jun",
-		"Jul",
-		"Aug",
-		"Sep",
-		"Oct",
-		"Nov",
-		"Dec",
-	];
-	return names[month - 1] || "";
+	return MONTH_NAMES[month - 1] || "";
+}
+
+export function getMonthNameShortMobile(month: number): string {
+	return MONTH_NAMES_MOBILE[month - 1] || "";
 }
 
 /**
