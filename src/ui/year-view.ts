@@ -308,7 +308,7 @@ export class LinearCalendarYearView extends ItemView {
 					color: data.color,
 					type: data.type || undefined,
 					participants: data.participants.length > 0 ? data.participants : undefined,
-					notes: data.notes || undefined,
+					description: data.description || undefined,
 				};
 				await saveEvent(this.plugin.app, this.plugin.settings.eventsFolder, event);
 				this.eventsCache = null;
@@ -334,7 +334,7 @@ export class LinearCalendarYearView extends ItemView {
 					color: data.color,
 					type: data.type || undefined,
 					participants: data.participants.length > 0 ? data.participants : undefined,
-					notes: data.notes || undefined,
+					description: data.description || undefined,
 				};
 				await updateEvent(this.plugin.app, this.plugin.settings.eventsFolder, updatedEvent);
 				this.eventsCache = null;

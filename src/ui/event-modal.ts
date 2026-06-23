@@ -8,7 +8,7 @@ export interface EventFormData {
 	color: string;
 	type: string;
 	participants: string[];
-	notes: string;
+	description: string;
 }
 
 export class EventModal extends Modal {
@@ -24,7 +24,7 @@ export class EventModal extends Modal {
 	private _colorInput!: HTMLInputElement;
 	private _typeInput!: HTMLInputElement;
 	private _participantsInput!: HTMLTextAreaElement;
-	private _notesInput!: HTMLTextAreaElement;
+	private _descriptionInput!: HTMLTextAreaElement;
 
 	constructor(
 		app: App,
@@ -158,21 +158,21 @@ export class EventModal extends Modal {
 		participantsInput.value = this.existingEvent?.participants?.join("\n") ?? "";
 		this._participantsInput = participantsInput;
 
-		// Notes
-		const notesGroup = form.createDiv("linear-calendar-modal-field");
-		notesGroup.createEl("label", {
-			text: "Notes",
-			attr: { for: "linear-calendar-notes" },
+		// Description
+		const descriptionGroup = form.createDiv("linear-calendar-modal-field");
+		descriptionGroup.createEl("label", {
+			text: "Description",
+			attr: { for: "linear-calendar-description" },
 		});
-		const notesInput = notesGroup.createEl("textarea", {
+		const descriptionInput = descriptionGroup.createEl("textarea", {
 			attr: {
-				id: "linear-calendar-notes",
-				placeholder: "Optional notes…",
+				id: "linear-calendar-description",
+				placeholder: "Optional description…",
 				rows: "3",
 			},
 		});
-		notesInput.value = this.existingEvent?.notes ?? "";
-		this._notesInput = notesInput;
+		descriptionInput.value = this.existingEvent?.description ?? "";
+		this._descriptionInput = descriptionInput;
 
 		// Buttons
 		const buttons = form.createDiv("linear-calendar-modal-buttons");
@@ -217,7 +217,7 @@ export class EventModal extends Modal {
 				.split(/\r?\n/)
 				.map((participant) => participant.trim())
 				.filter(Boolean),
-			notes: this._notesInput.value.trim(),
+			description: this._descriptionInput.value.trim(),
 		});
 		this.close();
 	}
