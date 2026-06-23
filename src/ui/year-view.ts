@@ -1,4 +1,4 @@
-import { ItemView, WorkspaceLeaf } from "obsidian";
+import { ItemView, TFile, WorkspaceLeaf } from "obsidian";
 import type LinearCalendarPlugin from "../main";
 import { renderCalendar } from "./calendar-renderer";
 import { EventModal } from "./event-modal";
@@ -263,6 +263,7 @@ export class LinearCalendarYearView extends ItemView {
 			events,
 			(dateStr) => this.openCreateEventModal(dateStr),
 			(event) => this.openEditEventModal(event),
+			(event) => this.openEventNote(event),
 			{
 				maxVisibleEventLanes: this.plugin.settings.maxVisibleEventLanes,
 				adaptMonthLanesToEvents: this.plugin.settings.adaptMonthLanesToEvents,
@@ -318,6 +319,14 @@ export class LinearCalendarYearView extends ItemView {
 				}
 			}
 		).open();
+	}
+
+	private openEventNote(event: LinearCalendarEvent): void {
+		if (!event.filePath) return;
+		const file = this.app.vault.getAbstractFileByPath(event.filePath);
+		if (file instanceof TFile) {
+			void this.app.workspace.getLeaf().openFile(file);
+		}
 	}
 
 	private openEditEventModal(event: LinearCalendarEvent): void {

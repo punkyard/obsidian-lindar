@@ -26,6 +26,7 @@ export function renderCalendar(
 	events: LinearCalendarEvent[],
 	onDateClick?: (dateStr: string) => void,
 	onEventClick?: (event: LinearCalendarEvent) => void,
+	onEventCmdClick?: (event: LinearCalendarEvent) => void,
 	options?: CalendarLayoutOptions
 ): void {
 	container.empty();
@@ -54,7 +55,7 @@ export function renderCalendar(
 
 	// 12 month rows
 	for (let month = 1; month <= 12; month++) {
-		renderMonthRow(monthsGrid, year, month, events, layoutOptions, onDateClick, onEventClick);
+		renderMonthRow(monthsGrid, year, month, events, layoutOptions, onDateClick, onEventClick, onEventCmdClick);
 	}
 
 	// Bottom weekday row (repeated day line)
@@ -92,7 +93,8 @@ function renderMonthRow(
 	events: LinearCalendarEvent[],
 	layoutOptions: CalendarLayoutOptions,
 	onDateClick?: (dateStr: string) => void,
-	onEventClick?: (event: LinearCalendarEvent) => void
+	onEventClick?: (event: LinearCalendarEvent) => void,
+	onEventCmdClick?: (event: LinearCalendarEvent) => void
 ): void {
 	const monthRow = wrapper.createDiv("linear-calendar-month-row");
 
@@ -163,7 +165,7 @@ function renderMonthRow(
 		totalLanes,
 		eventSpanStartCol,
 		eventSpanEndCol,
-	} = renderMonthEventBars(monthRow, year, month, daysInMonth, firstDayOffset, events, onEventClick);
+	} = renderMonthEventBars(monthRow, year, month, daysInMonth, firstDayOffset, events, onEventClick, onEventCmdClick);
 	const visibleLanes = getVisibleLanes(totalLanes, layoutOptions);
 	const rowHeightLanes = getRowHeightLanes(visibleLanes, totalLanes, layoutOptions);
 	applyMonthRowLayout(monthRow, visibleLanes, rowHeightLanes, totalLanes, layoutOptions);
@@ -232,7 +234,8 @@ function renderMonthEventBars(
 	daysInMonth: number,
 	firstDayOffset: number,
 	events: LinearCalendarEvent[],
-	onEventClick?: (event: LinearCalendarEvent) => void
+	onEventClick?: (event: LinearCalendarEvent) => void,
+	onEventCmdClick?: (event: LinearCalendarEvent) => void
 ): {
 	eventsLayer: HTMLElement | null;
 	totalLanes: number;
@@ -311,7 +314,11 @@ function renderMonthEventBars(
 
 		bar.addEventListener("click", (e) => {
 			e.stopPropagation();
-			onEventClick?.(event);
+			if (e.metaKey && onEventCmdClick) {
+				onEventCmdClick(event);
+			} else {
+				onEventClick?.(event);
+			}
 		});
 	}
 
