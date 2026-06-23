@@ -93,7 +93,8 @@
 
 .linear-calendar-wrapper {
 	--linear-calendar-weekday-row-height: 18px;
-	--linear-calendar-weekend-bg: color-mix(in srgb, var(--background-primary), var(--background-modifier-border-hover) 22%);
+	--linear-calendar-weekend-bg: color-mix(in srgb, var(--background-primary), var(--text-faint) 22%);
+	--linear-calendar-weekend-accent: color-mix(in srgb, transparent, var(--text-faint) 11%);
 	display: flex;
 	flex-direction: column;
 	width: max-content;
@@ -168,6 +169,7 @@
 
 .linear-calendar-weekday-cell.linear-calendar-weekend {
 	background-color: var(--linear-calendar-weekend-bg);
+	box-shadow: inset 2px 0 0 0 var(--linear-calendar-weekend-accent);
 }
 
 /* Month rows */
@@ -231,6 +233,11 @@
 
 .linear-calendar-cell.linear-calendar-weekend {
 	background-color: var(--linear-calendar-weekend-bg);
+	box-shadow: inset 2px 0 0 0 var(--linear-calendar-weekend-accent);
+}
+
+.linear-calendar-cell.linear-calendar-weekend.linear-calendar-empty {
+	box-shadow: none;
 }
 
 .linear-calendar-cell.linear-calendar-today {
