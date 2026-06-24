@@ -1,5 +1,5 @@
-# Lindar is under development
-🚧 Early development — breaking changes will occur
+# **Lindar** is under *development*
+🚧 Early development — breaking changes may occur
 
 > Yet another yearly linear calendar plugin for Obsidian, designed for long-horizon planning, but:
 > • yearly
@@ -10,7 +10,7 @@
 
 ***Lindar*** is a response to Nick Milo's request — in his video [The Most Useful Calendar View in 2025 That No One Told You About](https://youtu.be/SQHYj7x-t3A&t=702) from his channel [Linking Your Thinking](https://www.youtube.com/@linkingyourthinking).
 
-We'd like to thank him for his approach and his inspiration that guided the visual interface of ***Lindar***. We too are very much concerned by the tools we are provided with by usual apps and websites.
+We'd like to thank him for his approach and his inspiration that guided the visual interface of ***Lindar***.
 
 > ***Our calendar is bigger than a month***
 > ***to help you change your perspective and***
@@ -30,10 +30,12 @@ We'd like to thank him for his approach and his inspiration that guided the visu
 ---
 ## Quick start
 
-1. Open the `Linear Calendar` tab from the `ribbon` icon or command palette.
-2. Click a date (soon drag across dates) to create an event.
-3. Fill in title, date range, color, and optional metadata (`type`, `participants`).
-4. Save: the event is written as a Markdown note in your configured events folder.
+1. choose your `Events notes folder` in `Settings > Community plugins > Lindar` (default is `yearly-events`)
+2. open the `Linear Calendar` tab from the `ribbon` icon or command palette
+3. click a date (soon drag across dates) to create an event
+4. fill in `TITLE`, date range, color, and optional metadata (`TYPE`, `PARTICIPANTS`, `DESCRIPTION`)
+5. on `Save`: the event is written as a Markdown note in your configured events folder
+6. `cmd+click`an event to open its related local note
 
 ![](assets/event-details.png)
 
@@ -55,7 +57,6 @@ We'd like to thank him for his approach and his inspiration that guided the visu
     - iCal feed import
 
 ---
-
 ## License
 
 This project is licensed under the **[MIT License](LICENSE)**.

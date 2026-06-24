@@ -15,7 +15,6 @@
 - iCal feed import
 
 ---
-
 ## Completed phases
 
 ### Phase 1 — scaffold
