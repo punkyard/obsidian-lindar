@@ -6,6 +6,14 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 
 ## [Unreleased]
 
+## [0.1.11] - 2026-06-24
+
+### Fixed
+- Command name stripped to "Open" — plugin name no longer included per community guidelines (#48 #49)
+
+### Changed
+- Quick start step 3 now mentions hotkey as an open method
+
 ## [0.1.10] - 2026-06-24
 
 ### Added
