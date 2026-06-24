@@ -31,11 +31,12 @@ We'd like to thank him for his approach and his inspiration that guided the visu
 ## Quick start
 
 1. choose your `Events notes folder` in `Settings > Community plugins > Lindar` (default is `yearly-events`)
-2. open the `Linear Calendar` tab from the `ribbon` icon or command palette
-3. click a date (soon drag across dates) to create an event
-4. fill in `TITLE`, date range, color, and optional metadata (`TYPE`, `PARTICIPANTS`, `DESCRIPTION`)
-5. on `Save`: the event is written as a Markdown note in your configured events folder
-6. `cmd+click`an event to open its related local note
+2. set hotkey for **Lindar: Open Lindar**` in `Settings > Hotkeys` (suggested: cmd+Shift+L`)
+3. open the `Linear Calendar` tab from the `ribbon` icon or command palette
+4. click a date (soon drag across dates) to create an event
+5. fill in `TITLE`, date range, color, and optional metadata (`TYPE`, `PARTICIPANTS`, `DESCRIPTION`)
+6. on `Save`: the event is written as a Markdown note in your configured events folder
+7. `cmd+click`an event to open its related local note
 
 ![](assets/event-details.png)
 
