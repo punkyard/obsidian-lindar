@@ -6,9 +6,11 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 
 ## [Unreleased]
 
+## [0.1.10] - 2026-06-24
+
 ### Added
-- Documentation split: `docs/` folder with feature, dev, roadmap, design pages
-- Early development warning in settings tab
+- Participants auto-wrapped as `[[wikilinks]]` on save, stripped for clean display in modal (#46 #47)
+- Command renamed from "Open year view" to "Open Lindar" (#44 #45)
 
 ## [0.1.9] - 2026-06-24
 
