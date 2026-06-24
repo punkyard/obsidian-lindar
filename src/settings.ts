@@ -79,9 +79,21 @@ export class LinearCalendarSettingTab extends PluginSettingTab {
 					})
 			);
 
+		let lanesSetting: Setting;
+
 		new Setting(containerEl)
+			.setName("Expand months to fit events")
+			.setDesc("When enabled, each month expands to show all event lanes. When disabled, 'Visible event lanes per month' applies.")
+			.addToggle((toggle) =>
+				toggle.setValue(this.plugin.settings.adaptMonthLanesToEvents).onChange((value) => {
+					void this.updateAdaptMonthLanesToEvents(value);
+					lanesSetting?.settingEl.toggle(!value);
+				})
+			);
+
+		lanesSetting = new Setting(containerEl)
 			.setName("Visible event lanes per month")
-			.setDesc("Use 0 for responsive auto sizing. Use 1, 2, 3, or more to cap visible lanes before a month row scrolls internally.")
+			.setDesc("Choose how many event lanes are displayed (may require scroll). Keep 0 for responsive month rows.")
 			.addText((text) => {
 				text
 					.setPlaceholder(String(DEFAULT_SETTINGS.maxVisibleEventLanes))
@@ -105,14 +117,7 @@ export class LinearCalendarSettingTab extends PluginSettingTab {
 					});
 			});
 
-		new Setting(containerEl)
-			.setName("Expand months to fit events")
-			.setDesc("When enabled, each month expands to show all event lanes. When disabled, busy months stay responsive and scroll inside the month row.")
-			.addToggle((toggle) =>
-				toggle.setValue(this.plugin.settings.adaptMonthLanesToEvents).onChange((value) => {
-					void this.updateAdaptMonthLanesToEvents(value);
-				})
-			);
+		lanesSetting.settingEl.toggle(!this.plugin.settings.adaptMonthLanesToEvents);
 	}
 
 	private async updateAdaptMonthLanesToEvents(value: boolean): Promise<void> {
