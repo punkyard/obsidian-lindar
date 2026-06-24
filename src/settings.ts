@@ -7,7 +7,7 @@ let laneCapDebounceTimer: number | null = null;
 export const DEFAULT_SETTINGS: LinearCalendarSettings = {
 	eventsFolder: "yearly-events",
 	defaultColor: "#4f46e5",
-	motto: "Life is bigger than a week",
+	motto: "",
 	maxVisibleEventLanes: 0,
 	adaptMonthLanesToEvents: false,
 };
@@ -24,14 +24,8 @@ export class LinearCalendarSettingTab extends PluginSettingTab {
 		const { containerEl } = this;
 		containerEl.empty();
 
-		containerEl.createEl("h2", { text: "Lindar — Linear Calendar" });
-
-		const warning = containerEl.createDiv({ cls: "setting-item" });
-		warning.createEl("p", {
-			text: "⚠️ Early development. Expect breaking changes, schema migrations, and occasional data loss.",
-		});
-		warning.createEl("p", {
-			text: "Back up your vault before updating. Documentation: docs/features.md",
+		containerEl.createEl("p", {
+			text: "⚠️ Early development — expect breaking changes",
 		});
 
 		new Setting(containerEl)
@@ -79,7 +73,7 @@ export class LinearCalendarSettingTab extends PluginSettingTab {
 					.setPlaceholder(DEFAULT_SETTINGS.motto)
 					.setValue(this.plugin.settings.motto)
 					.onChange(async (value) => {
-						this.plugin.settings.motto = value.trim() || DEFAULT_SETTINGS.motto;
+						this.plugin.settings.motto = value.trim();
 						await this.plugin.saveSettings();
 						this.plugin.refreshCalendar();
 					})
