@@ -16,6 +16,7 @@ export class LinearCalendarYearView extends ItemView {
 	private yearDropdown: HTMLElement | null = null;
 	private removeYearDropdownListener: (() => void) | null = null;
 	private eventsCache: LinearCalendarEvent[] | null = null;
+	private navBar: HTMLElement | null = null;
 	private renderToken = 0;
 	private pendingRenderFrame: number | null = null;
 	private pendingRenderContainer: HTMLElement | null = null;
@@ -44,8 +45,8 @@ export class LinearCalendarYearView extends ItemView {
 		contentEl.empty();
 		contentEl.addClass("linear-calendar-view");
 
-		const navBar = contentEl.createDiv("linear-calendar-nav-bar");
-		const yearControls = navBar.createDiv("linear-calendar-year-controls");
+		this.navBar = contentEl.createDiv("linear-calendar-nav-bar");
+		const yearControls = this.navBar.createDiv("linear-calendar-year-controls");
 
 		const prevBtn = yearControls.createEl("button");
 		prevBtn.setText("←");
@@ -74,8 +75,7 @@ export class LinearCalendarYearView extends ItemView {
 		nextBtn.setAttribute("title", "Next year");
 		nextBtn.onclick = () => this.nextYear();
 
-		const mottoDisplay = navBar.createDiv("linear-calendar-motto-display");
-		mottoDisplay.setText(this.plugin.settings.motto || "");
+		this.updateMottoDisplay();
 
 		const calendarContainer = contentEl.createDiv("linear-calendar-calendar-container");
 		this.renderCurrentCalendar(calendarContainer);
@@ -216,9 +216,20 @@ export class LinearCalendarYearView extends ItemView {
 	}
 
 	refresh(): void {
+		this.updateMottoDisplay();
 		const calendarContainer = this.contentEl.querySelector(".linear-calendar-calendar-container");
 		if (calendarContainer instanceof HTMLElement) {
 			this.renderCurrentCalendar(calendarContainer, true);
+		}
+	}
+
+	private updateMottoDisplay(): void {
+		if (!this.navBar) return;
+		const existing = this.navBar.querySelector(".linear-calendar-motto-display");
+		if (existing) existing.remove();
+		if (this.plugin.settings.motto) {
+			const el = this.navBar.createDiv("linear-calendar-motto-display");
+			el.setText(this.plugin.settings.motto);
 		}
 	}
 
