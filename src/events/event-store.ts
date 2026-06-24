@@ -93,7 +93,7 @@ export async function loadEvents(
 			end: endDate,
 			color: frontmatterString(fm.color, "#4f46e5"),
 			type: optionalFrontmatterString(fm.type),
-			participants: frontmatterStringList(fm.participants),
+			participants: frontmatterStringList(fm.participants)?.map(stripWikilink),
 			description: optionalFrontmatterString(fm.description),
 			filePath: child.path,
 		});
@@ -184,6 +184,10 @@ function frontmatterStringList(value: unknown): string[] | undefined {
 	return parts.length > 0 ? parts : undefined;
 }
 
+function stripWikilink(name: string): string {
+	return name.replace(/^\[\[(.*)\]\]$/, "$1");
+}
+
 function buildEventNote(event: LinearCalendarEvent): string {
 	const lines: string[] = [
 		"---",
@@ -203,7 +207,7 @@ function buildEventNote(event: LinearCalendarEvent): string {
 	if (event.participants && event.participants.length > 0) {
 		lines.push("participants:");
 		for (const participant of event.participants) {
-			lines.push(`  - ${yamlString(participant)}`);
+			lines.push(`  - "[[${participant}]]"`);
 		}
 	}
 
