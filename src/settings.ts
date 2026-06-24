@@ -93,7 +93,7 @@ export class LinearCalendarSettingTab extends PluginSettingTab {
 
 		lanesSetting = new Setting(containerEl)
 			.setName("Visible event lanes per month")
-			.setDesc("Choose how many event lanes are displayed (may require scroll). Keep 0 for responsive month rows.")
+			.setDesc("Choose how many event lanes are displayed (may require scroll). Keep 0 to evenly display month rows.")
 			.addText((text) => {
 				text
 					.setPlaceholder(String(DEFAULT_SETTINGS.maxVisibleEventLanes))
