@@ -17,7 +17,7 @@ export default class LinearCalendarPlugin extends Plugin {
 
 		this.addCommand({
 			id: "open-linear-view",
-			name: "Open Lindar",
+			name: "Open",
 			callback: () => {
 				void this.activateView();
 			},
