@@ -24,6 +24,16 @@ export class LinearCalendarSettingTab extends PluginSettingTab {
 		const { containerEl } = this;
 		containerEl.empty();
 
+		containerEl.createEl("h2", { text: "Lindar — Linear Calendar" });
+
+		const warning = containerEl.createDiv({ cls: "setting-item" });
+		warning.createEl("p", {
+			text: "⚠️ Early development. Expect breaking changes, schema migrations, and occasional data loss.",
+		});
+		warning.createEl("p", {
+			text: "Back up your vault before updating. Documentation: docs/features.md",
+		});
+
 		new Setting(containerEl)
 			.setName("Event notes folder")
 			.setDesc("Folder used to store calendar event notes.")
